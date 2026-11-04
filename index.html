@@ -1,0 +1,3563 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Aplikasi Absensi Logistik 99</title>
+  <meta name="theme-color" content="#9584EA" />
+  <link rel="manifest" href="data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22Aplikasi%20Absensi%20Logistik%2099%22%2C%22short_name%22%3A%22Logistik%2099%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23FAF6F2%22%2C%22theme_color%22%3A%22%239584EA%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%2520viewBox%3D'0%25200%2520100%2520100'%253E%253Crect%2520width%3D'100'%2520height%3D'100'%2520rx%3D'28'%2520fill%3D'%25239584EA'%2F%253E%253Ctext%2520x%3D'50'%2520y%3D'65'%2520font-size%3D'50'%2520text-anchor%3D'middle'%2520fill%3D'white'%253EQR%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%7D%5D%7D" />
+
+  <!-- Google Fonts: Plus Jakarta Sans & Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS 3.4.17 -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+
+  <!-- HTML5-QRCode Scanner & QRCode Generator -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <style>
+    :root {
+      --bg-outer: #E6DDF8;
+      --bg-canvas: #FAF6F2;
+      --bg-sidebar: #9584EA;
+      --bg-hero: #C9BBF7;
+      --bg-card: #FDFBF9;
+      --accent-primary: #8A70E8;
+      --accent-pink: #EB7A90;
+      --text-main: #2D264B;
+      --text-body: #5E567A;
+      --text-muted: #8C84A6;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Full Page Wrapper for Blogger Compatibility without XML edits */
+    #blogger-fullpage-app {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: linear-gradient(135deg, #E6DDF8 0%, #EFE8FA 50%, #E2D6F7 100%);
+      font-family: 'Plus Jakarta Sans', 'Nunito', sans-serif;
+      color: var(--text-main);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .font-display {
+      font-family: 'Nunito', 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* 3D Claymorphism Utility Styles */
+    .clay-canvas {
+      background: #FAF6F2;
+      border-radius: 34px;
+      box-shadow:
+        0 20px 50px rgba(108, 88, 196, 0.18),
+        inset 0 3px 6px rgba(255, 255, 255, 0.95),
+        inset 0 -4px 8px rgba(215, 204, 238, 0.35);
+    }
+
+    .clay-sidebar {
+      background: linear-gradient(180deg, #9E8DF2 0%, #8E7BE6 100%);
+      border-radius: 32px;
+      box-shadow:
+        10px 14px 28px rgba(114, 94, 204, 0.28),
+        inset 3px 4px 8px rgba(255, 255, 255, 0.45),
+        inset -3px -5px 10px rgba(92, 72, 182, 0.35);
+    }
+
+    .clay-card {
+      background: #FDFBF9;
+      border-radius: 26px;
+      box-shadow:
+        8px 10px 24px rgba(149, 132, 234, 0.12),
+        -6px -6px 16px rgba(255, 255, 255, 0.85),
+        inset 2px 2px 5px rgba(255, 255, 255, 0.95),
+        inset -2px -3px 6px rgba(226, 218, 240, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .clay-hero {
+      background: linear-gradient(135deg, #D1C4FA 0%, #C2B2F5 100%);
+      border-radius: 28px;
+      box-shadow:
+        8px 12px 26px rgba(138, 112, 232, 0.22),
+        inset 3px 4px 8px rgba(255, 255, 255, 0.6),
+        inset -3px -5px 10px rgba(124, 99, 214, 0.25);
+    }
+
+    .clay-kpi-purple {
+      background: linear-gradient(145deg, #F3ECFC 0%, #EADFF8 100%);
+      border-radius: 24px;
+      box-shadow:
+        6px 10px 20px rgba(155, 126, 222, 0.14),
+        inset 2px 3px 6px rgba(255, 255, 255, 0.9),
+        inset -2px -3px 6px rgba(196, 176, 238, 0.35);
+    }
+
+    .clay-kpi-peach {
+      background: linear-gradient(145deg, #FDF0ED 0%, #FADFD8 100%);
+      border-radius: 24px;
+      box-shadow:
+        6px 10px 20px rgba(242, 125, 114, 0.14),
+        inset 2px 3px 6px rgba(255, 255, 255, 0.9),
+        inset -2px -3px 6px rgba(242, 185, 174, 0.35);
+    }
+
+    .clay-kpi-butter {
+      background: linear-gradient(145deg, #FEF7E6 0%, #FBECC9 100%);
+      border-radius: 24px;
+      box-shadow:
+        6px 10px 20px rgba(246, 189, 96, 0.15),
+        inset 2px 3px 6px rgba(255, 255, 255, 0.9),
+        inset -2px -3px 6px rgba(238, 206, 146, 0.35);
+    }
+
+    .clay-kpi-sky {
+      background: linear-gradient(145deg, #EFF5FC 0%, #E1ECF9 100%);
+      border-radius: 24px;
+      box-shadow:
+        6px 10px 20px rgba(110, 164, 232, 0.14),
+        inset 2px 3px 6px rgba(255, 255, 255, 0.9),
+        inset -2px -3px 6px rgba(169, 200, 238, 0.35);
+    }
+
+    .clay-icon-purple {
+      background: linear-gradient(145deg, #A78BFA 0%, #8B6CE8 100%);
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(139, 108, 232, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.5);
+    }
+
+    .clay-icon-peach {
+      background: linear-gradient(145deg, #F88D82 0%, #EC6B5F 100%);
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(236, 107, 95, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.5);
+    }
+
+    .clay-icon-butter {
+      background: linear-gradient(145deg, #FBD07C 0%, #F2B144 100%);
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(242, 177, 68, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.5);
+    }
+
+    .clay-icon-sky {
+      background: linear-gradient(145deg, #7FB3F5 0%, #5895E2 100%);
+      border-radius: 16px;
+      box-shadow: 0 6px 12px rgba(88, 149, 226, 0.35), inset 0 2px 3px rgba(255, 255, 255, 0.5);
+    }
+
+    .clay-btn-primary {
+      background: linear-gradient(180deg, #9880F2 0%, #7F63E2 100%);
+      color: #FFFFFF;
+      border-radius: 9999px;
+      box-shadow:
+        0 6px 16px rgba(127, 99, 226, 0.38),
+        inset 0 2px 4px rgba(255, 255, 255, 0.45),
+        inset 0 -3px 5px rgba(79, 55, 168, 0.3);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .clay-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 10px 20px rgba(127, 99, 226, 0.45),
+        inset 0 2px 4px rgba(255, 255, 255, 0.55),
+        inset 0 -3px 5px rgba(79, 55, 168, 0.3);
+    }
+    .clay-btn-primary:active {
+      transform: scale(0.96);
+    }
+
+    .clay-btn-pink {
+      background: linear-gradient(180deg, #F48B9F 0%, #E36981 100%);
+      color: #FFFFFF;
+      border-radius: 9999px;
+      box-shadow:
+        0 6px 14px rgba(227, 105, 129, 0.38),
+        inset 0 2px 4px rgba(255, 255, 255, 0.45),
+        inset 0 -3px 5px rgba(173, 58, 81, 0.3);
+      transition: all 0.2s ease;
+    }
+    .clay-btn-pink:hover {
+      transform: translateY(-2px);
+    }
+
+    .clay-btn-soft {
+      background: #FFFFFF;
+      color: #4A3E7A;
+      border-radius: 9999px;
+      box-shadow:
+        0 4px 12px rgba(149, 132, 234, 0.14),
+        inset 0 2px 3px rgba(255, 255, 255, 0.9),
+        inset 0 -2px 4px rgba(220, 210, 240, 0.5);
+      transition: all 0.2s ease;
+    }
+    .clay-btn-soft:hover {
+      background: #F7F3FE;
+      transform: translateY(-1px);
+    }
+
+    .clay-input {
+      background: #FFFFFF;
+      border-radius: 18px;
+      box-shadow:
+        inset 2px 3px 6px rgba(160, 146, 210, 0.14),
+        0 2px 4px rgba(255, 255, 255, 0.9);
+      border: 1.5px solid #EBE4F8;
+      transition: all 0.2s ease;
+    }
+    .clay-input:focus {
+      outline: none;
+      border-color: #9584EA;
+      box-shadow:
+        0 0 0 4px rgba(149, 132, 234, 0.18),
+        inset 2px 2px 4px rgba(160, 146, 210, 0.08);
+    }
+
+    .clay-nav-active {
+      background: #FAF6F2;
+      color: #4B3C8E !important;
+      border-radius: 18px;
+      box-shadow:
+        0 8px 18px rgba(74, 55, 150, 0.25),
+        inset 0 2px 4px rgba(255, 255, 255, 0.95),
+        inset 0 -2px 4px rgba(220, 210, 238, 0.5);
+      font-weight: 800;
+    }
+
+    .clay-bar-pill {
+      border-radius: 9999px;
+      box-shadow:
+        3px 5px 10px rgba(120, 105, 180, 0.2),
+        inset 2px 2px 4px rgba(255, 255, 255, 0.65),
+        inset -2px -2px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Responsive Media Queries (Mandatory Desktop Sidebar vs Mobile Bottom Nav) */
+    @media (min-width: 769px) {
+      #desktop-sidebar {
+        display: flex !important;
+      }
+      #mobile-bottom-nav {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #desktop-sidebar {
+        display: none !important;
+      }
+      #mobile-bottom-nav {
+        display: flex !important;
+      }
+      .clay-canvas {
+        border-radius: 0px;
+      }
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(149, 132, 234, 0.35);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(149, 132, 234, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <div id="blogger-fullpage-app">
+
+    <!-- PREVIEW MODE TOP BANNER (Automatically hidden when IS_PREVIEW = false) -->
+    <div id="preview-mode-banner" class="hidden bg-gradient-to-r from-[#6D55D6] via-[#8A70E8] to-[#EC729C] text-white px-4 py-2 text-xs font-semibold flex flex-wrap items-center justify-between gap-2 shadow-md z-50">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 backdrop-blur-sm font-bold tracking-wide">
+          <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+          MODE PREVIEW AKTIF
+        </span>
+        <span class="hidden sm:inline text-white/90">Berjalan dengan memori lokal (Data Dummy Minimalis). Ubah <code class="bg-black/20 px-1.5 py-0.5 rounded">IS_PREVIEW = false</code> saat deploy ke Blogger.</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" id="btn-quick-admin" onclick="quickPreviewLogin('admin')" class="px-3 py-1 rounded-full bg-white text-[#5B44B8] font-bold hover:bg-purple-50 transition shadow-sm">
+          Pintasan Admin HRD
+        </button>
+        <button type="button" id="btn-quick-emp" onclick="quickPreviewLogin('employee')" class="px-3 py-1 rounded-full bg-[#FDF0D5] text-[#7A5216] font-bold hover:bg-amber-100 transition shadow-sm">
+          Pintasan Karyawan (Mia)
+        </button>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 1: HYBRID LOGIN VIEW (CLEAN CLAYMORPHISM + GLASSMORPHISM)      -->
+    <!-- =================================================================== -->
+    <div id="auth-view" class="flex-1 overflow-y-auto flex items-center justify-center p-4 md:p-8">
+      <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 clay-canvas overflow-hidden border border-white/80">
+
+        <!-- Left Branding Column -->
+        <div class="md:col-span-5 clay-sidebar p-7 text-white flex flex-col justify-between relative overflow-hidden">
+          <div class="relative z-10">
+            <div class="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold mb-6">
+              <i data-lucide="qr-code" class="w-4 h-4"></i>
+              <span>Smart QR &amp; GPS Geofencing</span>
+            </div>
+            <h1 class="font-display text-2xl md:text-3xl font-extrabold leading-tight mb-3">
+              Aplikasi Absensi Logistik 99
+            </h1>
+          </div>
+
+          <!-- 3D Clay Illustration Card -->
+          <div class="my-6 p-4 rounded-3xl bg-white/15 backdrop-blur-md border border-white/25 flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-[#FAF6F2] flex items-center justify-center shadow-inner shrink-0">
+              <svg viewBox="0 0 80 80" class="w-12 h-12">
+                <defs>
+                  <linearGradient id="gradPurple" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#A78BFA" />
+                    <stop offset="100%" stop-color="#7C5CE6" />
+                  </linearGradient>
+                  <linearGradient id="gradPeach" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#F9A8D4" />
+                    <stop offset="100%" stop-color="#F472B6" />
+                  </linearGradient>
+                </defs>
+                <rect x="10" y="10" width="60" height="60" rx="18" fill="url(#gradPurple)" />
+                <rect x="20" y="20" width="16" height="16" rx="5" fill="#FFF" />
+                <rect x="44" y="20" width="16" height="16" rx="5" fill="#FFF" />
+                <rect x="20" y="44" width="16" height="16" rx="5" fill="#FFF" />
+                <circle cx="52" cy="52" r="10" fill="url(#gradPeach)" />
+                <path d="M48 52 l3 3 l6 -6" stroke="#FFF" stroke-width="3" fill="none" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="text-xs space-y-1">
+              <div class="font-bold text-white text-sm">Akurat dengan GPS</div>
+              <div class="text-white/80">Deteksi otomatis jarak meter karyawan dari titik koordinat kantor.</div>
+            </div>
+          </div>
+
+          <div class="text-xs text-white/75 flex items-center justify-between pt-2 border-t border-white/20">
+            <span id="login-company-label">Aplikasi Absensi Logistik 99</span>
+            <span>PWA Ready</span>
+          </div>
+        </div>
+
+        <!-- Right Login Form Column -->
+        <div class="md:col-span-7 p-6 sm:p-9 flex flex-col justify-center bg-[#FAF6F2]">
+          <div class="mb-6">
+            <h2 class="font-display text-2xl font-extrabold text-[#2D264B]">Selamat Datang! 👋</h2>
+            <p class="text-sm text-[#5E567A] mt-1">Pilih peran akses Anda untuk masuk ke dashboard absensi.</p>
+          </div>
+
+          <!-- Role Switcher Tabs (Hybrid Auth) -->
+          <div class="grid grid-cols-2 gap-2.5 p-1.5 rounded-2xl bg-[#ECE4FA] mb-6 shadow-inner">
+            <button type="button" id="tab-login-employee" onclick="switchLoginRole('employee')" class="py-2.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition-all clay-nav-active flex items-center justify-center gap-2">
+              <i data-lucide="smartphone" class="w-4 h-4"></i>
+              <span>Karyawan (HP)</span>
+            </button>
+            <button type="button" id="tab-login-admin" onclick="switchLoginRole('admin')" class="py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-[#5E567A] hover:text-[#2D264B] transition-all flex items-center justify-center gap-2">
+              <i data-lucide="shield-check" class="w-4 h-4"></i>
+              <span>Admin (HRD)</span>
+            </button>
+          </div>
+
+          <!-- Form Login Karyawan (Validasi Tabel Database Supabase) -->
+          <form id="form-login-employee" onsubmit="handleEmployeeLogin(event)" class="space-y-4">
+            <div class="p-3.5 rounded-2xl bg-[#EFE6FA] border border-purple-200/70 text-xs text-[#4A3B8C] flex items-start gap-2.5">
+              <i data-lucide="info" class="w-4 h-4 shrink-0 mt-0.5 text-[#8A70E8]"></i>
+              <span>Masuk menggunakan <strong>NIK atau Username</strong> dan <strong>Password</strong> yang terdaftar pada tabel karyawan untuk scan QR dari HP Anda.</span>
+            </div>
+            <div>
+              <label for="emp-login-id" class="block text-xs font-bold text-[#2D264B] mb-1.5">NIK / Username Karyawan</label>
+              <div class="relative">
+                <input id="emp-login-id" type="text" required placeholder="Contoh: EMP001 atau mia" class="w-full clay-input pl-10 pr-4 py-3 text-sm text-[#2D264B]" />
+                <i data-lucide="user" class="w-4 h-4 text-[#8C84A6] absolute left-3.5 top-3.5"></i>
+              </div>
+            </div>
+            <div>
+              <label for="emp-login-pass" class="block text-xs font-bold text-[#2D264B] mb-1.5">Password</label>
+              <div class="relative">
+                <input id="emp-login-pass" type="password" required placeholder="Masukkan password karyawan" class="w-full clay-input pl-10 pr-4 py-3 text-sm text-[#2D264B]" />
+                <i data-lucide="lock" class="w-4 h-4 text-[#8C84A6] absolute left-3.5 top-3.5"></i>
+              </div>
+            </div>
+            <button type="submit" id="btn-submit-emp-login" class="w-full clay-btn-primary py-3.5 text-sm font-extrabold flex items-center justify-center gap-2">
+              <i data-lucide="log-in" class="w-4 h-4"></i>
+              <span>Masuk &amp; Siapkan Scanner QR</span>
+            </button>
+          </form>
+
+          <!-- Form Login Admin (Supabase Auth Email & Password) -->
+          <form id="form-login-admin" onsubmit="handleAdminLogin(event)" class="space-y-4 hidden">
+            <div class="p-3.5 rounded-2xl bg-[#FCE5DF] border border-rose-200/70 text-xs text-[#7D352E] flex items-start gap-2.5">
+              <i data-lucide="key-round" class="w-4 h-4 shrink-0 mt-0.5 text-[#EC6B5F]"></i>
+              <span>Autentikasi Admin menggunakan <strong>Supabase Auth</strong> (Email &amp; Password resmi yang terdaftar di Supabase Authentication).</span>
+            </div>
+            <div>
+              <label for="admin-login-email" class="block text-xs font-bold text-[#2D264B] mb-1.5">Email Admin Supabase</label>
+              <div class="relative">
+                <input id="admin-login-email" type="email" required placeholder="admin@perusahaan.com" class="w-full clay-input pl-10 pr-4 py-3 text-sm text-[#2D264B]" />
+                <i data-lucide="mail" class="w-4 h-4 text-[#8C84A6] absolute left-3.5 top-3.5"></i>
+              </div>
+            </div>
+            <div>
+              <label for="admin-login-pass" class="block text-xs font-bold text-[#2D264B] mb-1.5">Password Admin</label>
+              <div class="relative">
+                <input id="admin-login-pass" type="password" required placeholder="Masukkan password Admin" class="w-full clay-input pl-10 pr-4 py-3 text-sm text-[#2D264B]" />
+                <i data-lucide="lock" class="w-4 h-4 text-[#8C84A6] absolute left-3.5 top-3.5"></i>
+              </div>
+            </div>
+            <button type="submit" id="btn-submit-admin-login" class="w-full clay-btn-primary py-3.5 text-sm font-extrabold flex items-center justify-center gap-2">
+              <i data-lucide="shield" class="w-4 h-4"></i>
+              <span>Masuk ke Panel Admin</span>
+            </button>
+          </form>
+
+          <!-- Preview Quick Access Box (Hidden automatically when IS_PREVIEW = false) -->
+          <div id="login-preview-box" class="mt-6 pt-5 border-t border-purple-200/60 hidden">
+            <div class="text-xs font-bold text-[#5E567A] mb-2.5 flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#8A70E8]"></i>
+              <span>Uji Coba Cepat (Mode Preview Tanpa Ketik Password):</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <button type="button" onclick="quickPreviewLogin('employee')" class="clay-btn-soft py-2.5 px-4 text-xs font-extrabold flex items-center justify-center gap-2">
+                <i data-lucide="scan-line" class="w-4 h-4 text-[#8A70E8]"></i>
+                <span>Coba HP Karyawan (Mia)</span>
+              </button>
+              <button type="button" onclick="quickPreviewLogin('admin')" class="clay-btn-soft py-2.5 px-4 text-xs font-extrabold flex items-center justify-center gap-2">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 text-[#EB7A90]"></i>
+                <span>Coba Dashboard Admin</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- VIEW 2: MAIN APPLICATION SHELL (SIDEBAR + BENTO CONTENT WORKSPACE)  -->
+    <!-- =================================================================== -->
+    <div id="app-shell" class="hidden flex-1 flex overflow-hidden p-0 md:p-4 lg:p-5 gap-5">
+
+      <!-- DESKTOP FIXED LEFT SIDEBAR (3D CLAY PILLAR) -->
+      <aside id="desktop-sidebar" class="w-64 shrink-0 clay-sidebar text-white flex flex-col justify-between p-5 select-none">
+        <div>
+          <!-- Top User Avatar & Greeting (Matches Reference Image "Hi, Mia! 👋") -->
+          <div class="flex flex-col items-center text-center pt-2 pb-5">
+            <div class="w-20 h-20 rounded-full p-1.5 bg-white/30 shadow-lg mb-3 relative">
+              <div id="sidebar-avatar" class="w-full h-full rounded-full bg-[#FAF6F2] text-[#6C52D8] flex items-center justify-center font-display font-black text-2xl shadow-inner">
+                M
+              </div>
+              <span class="w-4 h-4 rounded-full bg-emerald-400 border-2 border-white absolute bottom-1 right-1" title="Online"></span>
+            </div>
+            <h2 id="sidebar-greeting" class="font-display font-extrabold text-lg tracking-tight text-white">
+              Hi, Mia! 👋
+            </h2>
+            <p id="sidebar-role-badge" class="text-xs text-white/80 font-semibold mt-0.5 px-3 py-0.5 rounded-full bg-white/15">
+              UI/UX Designer • EMP001
+            </p>
+          </div>
+
+          <!-- Navigation Links Container (Rendered dynamically per role) -->
+          <nav id="sidebar-nav-list" class="space-y-2 mt-2"></nav>
+        </div>
+
+        <!-- Bottom Clay Promo / Radius Status Card (Matches "Go Premium" card in Reference Image) -->
+        <div class="p-4 rounded-3xl bg-gradient-to-b from-[#FAD6DF] to-[#F5BECA] text-[#4A2533] shadow-lg text-center space-y-2 border border-white/60">
+          <div class="w-10 h-10 rounded-2xl bg-[#FBD07C] text-[#7A5216] mx-auto flex items-center justify-center shadow-md">
+            <i data-lucide="map-pin" class="w-5 h-5"></i>
+          </div>
+          <div class="font-display font-extrabold text-sm" id="sidebar-radius-title">Radius Kantor: 100m</div>
+          <p class="text-[11px] text-[#6B3B4C] leading-snug" id="sidebar-radius-desc">
+            Pastikan GPS aktif saat melakukan scan QR Code absensi.
+          </p>
+          <button type="button" id="btn-sidebar-logout" onclick="handleLogout()" class="w-full clay-btn-pink py-2 text-xs font-extrabold flex items-center justify-center gap-1.5">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <span>Keluar Akun</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN BENTO CANVAS WORKSPACE -->
+      <main class="flex-1 clay-canvas flex flex-col overflow-hidden relative">
+
+        <!-- TOP HEADER BAR (Matches Reference: Title left, Capsule Search center, Bell & Profile right) -->
+        <header class="px-5 sm:px-7 pt-5 pb-4 flex flex-wrap items-center justify-between gap-3 border-b border-purple-100/80 shrink-0">
+          <div class="flex items-center gap-3">
+            <h1 id="page-header-title" class="font-display text-2xl sm:text-3xl font-extrabold text-[#2D264B] tracking-tight">
+              Dashboard
+            </h1>
+            <span id="live-clock-badge" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFE6FA] text-[#6247C7] text-xs font-extrabold">
+              <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+              <span id="live-clock-text">08:00:00</span>
+            </span>
+          </div>
+
+          <div class="flex items-center gap-3 flex-1 max-w-md mx-auto hidden md:flex">
+            <div class="relative w-full">
+              <input id="global-search-input" type="text" oninput="handleGlobalSearch(this.value)" placeholder="Cari nama karyawan, NIK, atau divisi..." class="w-full clay-input rounded-full pl-10 pr-4 py-2.5 text-xs font-semibold text-[#2D264B] placeholder-[#8C84A6]" />
+              <i data-lucide="search" class="w-4 h-4 text-[#8C84A6] absolute left-3.5 top-2.5"></i>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2.5">
+            <!-- GPS Quick Pill -->
+            <button type="button" id="btn-header-gps" onclick="refreshCurrentGPS(true)" class="clay-btn-soft px-3.5 py-2 text-xs font-extrabold flex items-center gap-1.5" title="Perbarui Lokasi GPS">
+              <i data-lucide="navigation" class="w-3.5 h-3.5 text-[#8A70E8]"></i>
+              <span id="header-gps-distance">Cek GPS</span>
+            </button>
+
+            <!-- Notification Bell with Pink Count Badge -->
+            <button type="button" id="btn-header-notif" onclick="openNotificationModal()" class="w-10 h-10 rounded-full clay-btn-soft flex items-center justify-center relative" title="Info Kehadiran">
+              <i data-lucide="bell" class="w-4 h-4 text-[#6C52D8]"></i>
+              <span id="notif-badge-count" class="w-4 h-4 rounded-full bg-[#EB7A90] text-white text-[10px] font-extrabold flex items-center justify-center absolute -top-0.5 -right-0.5 shadow">
+                2
+              </span>
+            </button>
+
+            <!-- Mobile Logout Button -->
+            <button type="button" id="btn-mobile-logout" onclick="handleLogout()" class="md:hidden w-10 h-10 rounded-full bg-[#FCE5DF] text-[#D9534F] flex items-center justify-center shadow-sm" title="Keluar">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </header>
+
+        <!-- SCROLLABLE BENTO CONTENT AREA -->
+        <div id="main-scroll-area" class="flex-1 overflow-y-auto p-5 sm:p-7 pb-24 md:pb-8 space-y-6">
+
+          <!-- =============================================================== -->
+          <!-- ADMIN SECTION 1: DASHBOARD OVERVIEW                             -->
+          <!-- =============================================================== -->
+          <section id="sec-admin-dashboard" class="space-y-6 hidden">
+            <!-- Hero Banner (Matches Reference Image "Good Morning, Mia! ☀️") -->
+            <div class="clay-hero p-6 sm:p-7 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+              <div class="flex flex-col sm:flex-row items-center gap-5 z-10 text-center sm:text-left">
+                <!-- 3D Character / Office Avatar SVG -->
+                <div class="w-24 h-24 rounded-3xl bg-[#FAF6F2]/90 p-3 shadow-lg flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 100 100" class="w-full h-full">
+                    <circle cx="50" cy="50" r="44" fill="#EFE6FA" />
+                    <circle cx="50" cy="38" r="16" fill="#F6C4A8" />
+                    <path d="M30 34 C30 18, 70 18, 70 34 C72 28, 66 16, 50 16 C34 16, 28 28, 30 34 Z" fill="#5D3A29" />
+                    <rect x="26" y="58" width="48" height="28" rx="14" fill="#8A70E8" />
+                    <circle cx="44" cy="38" r="2.2" fill="#2D264B" />
+                    <circle cx="56" cy="38" r="2.2" fill="#2D264B" />
+                    <path d="M45 45 Q50 49 55 45" stroke="#2D264B" stroke-width="2.4" fill="none" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/40 text-[#3E2F78] text-xs font-extrabold mb-2">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    <span id="admin-hero-company">Aplikasi Absensi Logistik 99</span>
+                  </div>
+                  <h2 id="admin-hero-greeting" class="font-display text-2xl sm:text-3xl font-extrabold text-[#2D264B]">
+                    Selamat Pagi, Admin HRD! ☀️
+                  </h2>
+                  <p class="text-sm text-[#4B3F72] font-medium mt-1 max-w-lg">
+                    Pantau kehadiran karyawan secara real-time, tampilkan QR Code harian di monitor kantor, dan verifikasi radius GPS dengan mudah.
+                  </p>
+                  <div class="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                    <button type="button" onclick="navigateMenu('qr-generator')" class="clay-btn-primary px-5 py-2.5 text-xs sm:text-sm font-extrabold inline-flex items-center gap-2">
+                      <i data-lucide="qr-code" class="w-4 h-4"></i>
+                      <span>Tampilkan QR Absensi</span>
+                    </button>
+                    <button type="button" onclick="navigateMenu('attendance-logs')" class="clay-btn-soft px-4 py-2.5 text-xs sm:text-sm font-extrabold inline-flex items-center gap-2">
+                      <i data-lucide="clipboard-list" class="w-4 h-4 text-[#8A70E8]"></i>
+                      <span>Rekap &amp; Radius GPS</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Decorative 3D Plant / Active QR Mini Card -->
+              <div class="bg-white/65 backdrop-blur-md rounded-3xl p-4 border border-white/80 shadow-md flex items-center gap-3.5 shrink-0">
+                <div class="w-12 h-12 rounded-2xl clay-icon-purple text-white flex items-center justify-center">
+                  <i data-lucide="radio" class="w-6 h-6"></i>
+                </div>
+                <div class="text-xs">
+                  <div class="text-[#5E567A] font-semibold">Token QR Aktif Hari Ini</div>
+                  <div id="admin-hero-qr-code" class="font-display font-black text-base text-[#2D264B] tracking-wider">QR-HKN-2026</div>
+                  <div id="admin-hero-radius-info" class="text-[11px] font-bold text-emerald-700">Batas Radius: 100m</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4 Pastel Clay KPI Cards (Matches Songs Played, Favorites, Hours Listened, Current Streak) -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+              <!-- KPI 1: Hadir Tepat Waktu -->
+              <div class="clay-kpi-purple p-5 flex flex-col justify-between">
+                <div class="w-11 h-11 clay-icon-purple text-white flex items-center justify-center mb-4">
+                  <i data-lucide="user-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-[#5E567A]">Hadir Hari Ini</div>
+                  <div id="kpi-admin-present" class="font-display text-2xl sm:text-3xl font-black text-[#2D264B] my-1">2</div>
+                  <div id="kpi-admin-present-sub" class="text-[11px] font-extrabold text-emerald-700">Tepat waktu &amp; terverifikasi</div>
+                </div>
+              </div>
+
+              <!-- KPI 2: Terlambat -->
+              <div class="clay-kpi-peach p-5 flex flex-col justify-between">
+                <div class="w-11 h-11 clay-icon-peach text-white flex items-center justify-center mb-4">
+                  <i data-lucide="clock-alert" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-[#5E567A]">Terlambat</div>
+                  <div id="kpi-admin-late" class="font-display text-2xl sm:text-3xl font-black text-[#2D264B] my-1">0</div>
+                  <div id="kpi-admin-late-sub" class="text-[11px] font-extrabold text-[#C95B4E]">Toleransi 15 menit</div>
+                </div>
+              </div>
+
+              <!-- KPI 3: Izin / Sakit -->
+              <div class="clay-kpi-butter p-5 flex flex-col justify-between">
+                <div class="w-11 h-11 clay-icon-butter text-white flex items-center justify-center mb-4">
+                  <i data-lucide="file-text" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-[#5E567A]">Izin &amp; Sakit</div>
+                  <div id="kpi-admin-leave" class="font-display text-2xl sm:text-3xl font-black text-[#2D264B] my-1">0</div>
+                  <div class="text-[11px] font-extrabold text-[#9A6B19]">Pengajuan tercatat</div>
+                </div>
+              </div>
+
+              <!-- KPI 4: Dalam Radius GPS -->
+              <div class="clay-kpi-sky p-5 flex flex-col justify-between">
+                <div class="w-11 h-11 clay-icon-sky text-white flex items-center justify-center mb-4">
+                  <i data-lucide="map-pinned" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-[#5E567A]">Karyawan Aktif</div>
+                  <div id="kpi-admin-total-emp" class="font-display text-2xl sm:text-3xl font-black text-[#2D264B] my-1">2</div>
+                  <div id="kpi-admin-radius-sub" class="text-[11px] font-extrabold text-[#3A72B8]">100% dalam radius</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Middle Bento Row: Weekly Attendance Overview (Bar Chart) & Status Proportion (Donut Chart) -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+              <!-- Left: 3D Capsule Bar Chart (Matches "Listening Overview") -->
+              <div class="lg:col-span-7 clay-card p-5 sm:p-6 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 class="font-display font-extrabold text-base text-[#2D264B]">Overview Kehadiran Mingguan</h3>
+                    <p class="text-xs text-[#8C84A6]">Tingkat kehadiran karyawan 7 hari terakhir</p>
+                  </div>
+                  <span class="px-3 py-1 rounded-full bg-[#F3EEFC] text-[#5E567A] text-xs font-bold border border-purple-100">
+                    Minggu Ini
+                  </span>
+                </div>
+                <div id="admin-weekly-bars" class="h-44 flex items-end justify-between gap-2 sm:gap-4 pt-6 px-2"></div>
+              </div>
+
+              <!-- Right: Donut Chart & Legend (Matches "Top Genres") -->
+              <div class="lg:col-span-5 clay-card p-5 sm:p-6 flex flex-col justify-between">
+                <div class="mb-3">
+                  <h3 class="font-display font-extrabold text-base text-[#2D264B]">Komposisi Status &amp; Lokasi</h3>
+                  <p class="text-xs text-[#8C84A6]">Distribusi log absensi tercatat</p>
+                </div>
+                <div class="flex items-center justify-between gap-4 my-auto py-2">
+                  <div class="w-32 h-32 shrink-0 relative flex items-center justify-center">
+                    <svg id="admin-donut-svg" viewBox="0 0 42 42" class="w-full h-full -rotate-90"></svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                      <span id="admin-donut-total" class="font-display font-black text-lg text-[#2D264B]">2</span>
+                      <span class="text-[10px] font-bold text-[#8C84A6]">Total Log</span>
+                    </div>
+                  </div>
+                  <div id="admin-donut-legend" class="flex-1 space-y-2 text-xs"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bottom Bento Row: Recent Scans List & Office Geolocation Card -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+              <!-- Recent Scans (Matches "Recently Played") -->
+              <div class="lg:col-span-7 clay-card p-5 sm:p-6">
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 class="font-display font-extrabold text-base text-[#2D264B]">Aktivitas Scan QR Terbaru</h3>
+                    <p class="text-xs text-[#8C84A6]">Lengkap dengan jarak meter dari titik kantor</p>
+                  </div>
+                  <button type="button" onclick="navigateMenu('attendance-logs')" class="px-3 py-1 rounded-full bg-[#F3EEFC] text-[#6247C7] text-xs font-extrabold hover:bg-purple-100 transition">
+                    Lihat Semua
+                  </button>
+                </div>
+                <div id="admin-recent-logs-list" class="space-y-3"></div>
+              </div>
+
+              <!-- Office Radar Card (Matches "Daily Mix") -->
+              <div class="lg:col-span-5 clay-card p-5 sm:p-6 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="font-display font-extrabold text-base text-[#2D264B]">Titik Radar Kantor</h3>
+                  <button type="button" onclick="navigateMenu('settings')" class="px-3 py-1 rounded-full bg-[#F3EEFC] text-[#6247C7] text-xs font-extrabold hover:bg-purple-100 transition">
+                    Atur Lokasi
+                  </button>
+                </div>
+                <div class="rounded-3xl p-5 bg-gradient-to-br from-[#8A70E8] via-[#9D85F2] to-[#E586A6] text-white relative overflow-hidden shadow-lg flex-1 flex flex-col justify-between min-h-[180px]">
+                  <div class="flex items-start justify-between gap-2 z-10">
+                    <div>
+                      <span class="px-2.5 py-0.5 rounded-full bg-white/25 text-[11px] font-extrabold">Geofencing Aktif</span>
+                      <h4 id="card-office-name" class="font-display font-extrabold text-lg mt-2">Kantor Pusat Bandung</h4>
+                      <p id="card-office-coords" class="text-xs text-white/85 font-mono mt-0.5">-6.917500, 107.619100</p>
+                    </div>
+                    <div class="w-11 h-11 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      <i data-lucide="locate-fixed" class="w-6 h-6 text-white"></i>
+                    </div>
+                  </div>
+                  <div class="mt-4 pt-3 border-t border-white/25 flex items-center justify-between z-10">
+                    <div class="text-xs">
+                      <span class="text-white/80">Radius Maksimal:</span>
+                      <strong id="card-office-radius" class="ml-1 text-sm">100 Meter</strong>
+                    </div>
+                    <button type="button" onclick="navigateMenu('qr-generator')" class="w-9 h-9 rounded-full bg-white text-[#7F63E2] flex items-center justify-center shadow-md hover:scale-105 transition" title="Buka Layar QR">
+                      <i data-lucide="qr-code" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- =============================================================== -->
+          <!-- ADMIN SECTION 2: QR CODE GENERATOR & MONITOR DISPLAY            -->
+          <!-- =============================================================== -->
+          <section id="sec-admin-qr-generator" class="space-y-6 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <!-- QR Display Card -->
+              <div class="lg:col-span-6 clay-card p-6 sm:p-8 flex flex-col items-center text-center">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EFE6FA] text-[#6247C7] text-xs font-extrabold mb-3">
+                  <i data-lucide="scan-qr-code" class="w-4 h-4"></i>
+                  <span>Layar Scan QR Karyawan</span>
+                </div>
+                <h2 class="font-display text-xl sm:text-2xl font-extrabold text-[#2D264B]" id="qr-display-company">
+                  Aplikasi Absensi Logistik 99
+                </h2>
+                <p class="text-xs text-[#5E567A] mt-1">
+                  Arahkan kamera HP pada menu <strong>Scan QR Absen</strong> untuk mencatat kehadiran.
+                </p>
+
+                <!-- QR Canvas Box -->
+                <div class="my-6 p-6 rounded-[30px] bg-white shadow-lg border-4 border-[#EFE6FA] flex flex-col items-center justify-center">
+                  <div id="qrcode-canvas-box" class="w-56 h-56 flex items-center justify-center"></div>
+                  <div class="mt-4 px-4 py-1.5 rounded-full bg-[#FAF6F2] border border-purple-200 text-xs font-mono font-extrabold text-[#4A3B8C]" id="qr-display-token-text">
+                    QR-HKN-2026
+                  </div>
+                </div>
+
+                <div class="w-full grid grid-cols-2 gap-3 text-left bg-[#FAF6F2] p-4 rounded-2xl border border-purple-100 text-xs mb-5">
+                  <div>
+                    <span class="text-[#8C84A6] block">Tanggal Sesi:</span>
+                    <strong id="qr-display-date" class="text-[#2D264B]">2026-11-04</strong>
+                  </div>
+                  <div>
+                    <span class="text-[#8C84A6] block">Tipe Sesi QR:</span>
+                    <strong id="qr-display-type" class="text-emerald-700">Masuk &amp; Pulang (ALL)</strong>
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-3 w-full">
+                  <button type="button" onclick="regenerateActiveQR()" class="clay-btn-primary px-5 py-3 text-xs font-extrabold flex items-center gap-2">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    <span>Buat Token QR Baru</span>
+                  </button>
+                  <button type="button" onclick="copyActiveQRToken()" class="clay-btn-soft px-4 py-3 text-xs font-extrabold flex items-center gap-2">
+                    <i data-lucide="copy" class="w-4 h-4 text-[#8A70E8]"></i>
+                    <span>Salin Kode Token</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Create & Manage QR Sessions -->
+              <div class="lg:col-span-6 space-y-5">
+                <div class="clay-card p-6">
+                  <h3 class="font-display font-extrabold text-base text-[#2D264B] mb-1">Buat Sesi QR Kustom</h3>
+                  <p class="text-xs text-[#8C84A6] mb-4">Generate kode QR baru untuk tanggal atau sesi spesifik.</p>
+                  <form id="form-create-qr" onsubmit="handleCreateQRSession(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label for="qr-input-code" class="block text-xs font-bold text-[#2D264B] mb-1">Kode Token QR</label>
+                        <input id="qr-input-code" type="text" required placeholder="Contoh: QR-PAGI-01" class="w-full clay-input px-3.5 py-2.5 text-xs font-mono font-bold text-[#2D264B]" />
+                      </div>
+                      <div>
+                        <label for="qr-input-date" class="block text-xs font-bold text-[#2D264B] mb-1">Tanggal Berlaku</label>
+                        <input id="qr-input-date" type="date" required class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold text-[#2D264B]" />
+                      </div>
+                    </div>
+                    <div>
+                      <label for="qr-input-type" class="block text-xs font-bold text-[#2D264B] mb-1">Peruntukan Scan</label>
+                      <select id="qr-input-type" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold text-[#2D264B]">
+                        <option value="ALL">Semua (Check-In Masuk &amp; Check-Out Pulang)</option>
+                        <option value="CHECK_IN">Khusus Absen Masuk (Check-In)</option>
+                        <option value="CHECK_OUT">Khusus Absen Pulang (Check-Out)</option>
+                      </select>
+                    </div>
+                    <button type="submit" class="w-full clay-btn-primary py-3 text-xs font-extrabold flex items-center justify-center gap-2">
+                      <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                      <span>Simpan &amp; Aktifkan QR Code Ini</span>
+                    </button>
+                  </form>
+                </div>
+
+                <div class="clay-card p-6">
+                  <h3 class="font-display font-extrabold text-base text-[#2D264B] mb-3">Daftar Sesi QR Tersimpan</h3>
+                  <div id="qr-sessions-list" class="space-y-2.5 max-h-64 overflow-y-auto"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- =============================================================== -->
+          <!-- ADMIN SECTION 3: DATA KARYAWAN (CRUD)                           -->
+          <!-- =============================================================== -->
+          <section id="sec-admin-employees" class="space-y-6 hidden">
+            <div class="clay-card p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h2 class="font-display text-lg sm:text-xl font-extrabold text-[#2D264B]">Manajemen Data &amp; Akun Karyawan</h2>
+                <p class="text-xs text-[#8C84A6]">Kelola kredensial login HP (NIK, Username, Password) dan divisi karyawan.</p>
+              </div>
+              <button type="button" onclick="openEmployeeModal()" class="clay-btn-primary px-5 py-2.5 text-xs font-extrabold flex items-center gap-2">
+                <i data-lucide="user-plus" class="w-4 h-4"></i>
+                <span>Tambah Karyawan Baru</span>
+              </button>
+            </div>
+
+            <div id="employees-grid-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+          </section>
+
+          <!-- =============================================================== -->
+          <!-- ADMIN SECTION 4: REKAP & LOG ABSENSI + RADIUS GPS               -->
+          <!-- =============================================================== -->
+          <section id="sec-admin-attendance-logs" class="space-y-6 hidden">
+            <div class="clay-card p-5 sm:p-6 space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 class="font-display text-lg sm:text-xl font-extrabold text-[#2D264B]">Rekap Kehadiran &amp; Verifikasi Radius GPS</h2>
+                  <p class="text-xs text-[#8C84A6]">Pantau jam Check-In, Check-Out, jarak meter dari kantor, dan titik Google Maps.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2.5">
+                  <button type="button" onclick="openManualAttendanceModal()" class="clay-btn-primary px-4 py-2.5 text-xs font-extrabold flex items-center gap-1.5">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>Input / Koreksi Absen</span>
+                  </button>
+                  <button type="button" onclick="exportAttendanceCSV()" class="clay-btn-soft px-4 py-2.5 text-xs font-extrabold flex items-center gap-1.5">
+                    <i data-lucide="download" class="w-4 h-4 text-[#8A70E8]"></i>
+                    <span>Unduh CSV</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Filter Controls (Rentang Tanggal Dari s.d. Sampai, Status, Radius) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2 border-t border-purple-100 items-end">
+                <div>
+                  <label for="filter-log-date" class="block text-[11px] font-bold text-[#5E567A] mb-1">Dari Tanggal</label>
+                  <input id="filter-log-date" type="date" onchange="renderAdminLogsTable()" class="w-full clay-input px-3 py-2 text-xs font-semibold text-[#2D264B]" />
+                </div>
+                <div>
+                  <label for="filter-log-date-to" class="block text-[11px] font-bold text-[#5E567A] mb-1">Sampai Tanggal</label>
+                  <input id="filter-log-date-to" type="date" onchange="renderAdminLogsTable()" class="w-full clay-input px-3 py-2 text-xs font-semibold text-[#2D264B]" />
+                </div>
+                <div>
+                  <label for="filter-log-status" class="block text-[11px] font-bold text-[#5E567A] mb-1">Filter Status Kehadiran</label>
+                  <select id="filter-log-status" onchange="renderAdminLogsTable()" class="w-full clay-input px-3 py-2 text-xs font-semibold text-[#2D264B]">
+                    <option value="ALL">Semua Status</option>
+                    <option value="Hadir">Hadir Tepat Waktu</option>
+                    <option value="Terlambat">Terlambat</option>
+                    <option value="Izin">Izin</option>
+                    <option value="Sakit">Sakit</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="filter-log-radius" class="block text-[11px] font-bold text-[#5E567A] mb-1">Filter Radius Lokasi</label>
+                  <select id="filter-log-radius" onchange="renderAdminLogsTable()" class="w-full clay-input px-3 py-2 text-xs font-semibold text-[#2D264B]">
+                    <option value="ALL">Semua Lokasi</option>
+                    <option value="INSIDE">Dalam Radius Kantor</option>
+                    <option value="OUTSIDE">Di Luar Radius Kantor</option>
+                  </select>
+                </div>
+                <div>
+                  <button type="button" id="btn-reset-log-filter" onclick="resetAdminLogFilters()" class="w-full clay-btn-soft py-2 px-3 text-xs font-extrabold flex items-center justify-center gap-1.5">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-[#8A70E8]"></i>
+                    <span>Reset Filter</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Summary Bar: Akumulasi Jumlah Jam Kerja pada Rentang Tanggal -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div class="p-3.5 rounded-2xl bg-[#EFE6FA]/75 border border-purple-200/70 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl clay-icon-purple text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="clock-4" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-[11px] font-bold text-[#5E567A]">Total Akumulasi Jam Kerja</div>
+                    <div id="rekap-summary-total-hours" class="font-display font-black text-base sm:text-lg text-[#2D264B]">0 Jam 0 Menit</div>
+                  </div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-[#FDF0D5]/85 border border-amber-200/70 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl clay-icon-butter text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="gauge" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-[11px] font-bold text-[#5E567A]">Rata-Rata Jam Kerja / Sesi</div>
+                    <div id="rekap-summary-avg-hours" class="font-display font-black text-base sm:text-lg text-[#2D264B]">0.0 Jam</div>
+                  </div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-[#E5ECF6]/85 border border-sky-200/70 flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-xl clay-icon-sky text-white flex items-center justify-center shrink-0">
+                    <i data-lucide="calendar-range" class="w-5 h-5"></i>
+                  </div>
+                  <div>
+                    <div class="text-[11px] font-bold text-[#5E567A]">Periode &amp; Jumlah Data</div>
+                    <div id="rekap-summary-period" class="font-display font-black text-xs sm:text-sm text-[#2D264B]">Semua Tanggal (2 Log)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="clay-card overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="bg-[#F3EEFC] text-[#4A3B8C] text-[11px] font-extrabold uppercase tracking-wider">
+                      <th class="py-3.5 px-4">Karyawan</th>
+                      <th class="py-3.5 px-4">Tanggal</th>
+                      <th class="py-3.5 px-4">Check-In</th>
+                      <th class="py-3.5 px-4">Check-Out</th>
+                      <th class="py-3.5 px-4">Jumlah Jam Kerja</th>
+                      <th class="py-3.5 px-4">Jarak &amp; Radius GPS</th>
+                      <th class="py-3.5 px-4">Status</th>
+                      <th class="py-3.5 px-4 text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody id="admin-logs-tbody" class="divide-y divide-purple-100/70 text-xs"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- =============================================================== -->
+          <!-- ADMIN SECTION 5: PENGATURAN JAM KERJA & TITIK KOORDINAT KANTOR  -->
+          <!-- =============================================================== -->
+          <section id="sec-admin-settings" class="space-y-6 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div class="lg:col-span-7 clay-card p-6 sm:p-7">
+                <h2 class="font-display text-lg sm:text-xl font-extrabold text-[#2D264B] mb-1">
+                  Pengaturan Jam Kerja &amp; Radius GPS Kantor
+                </h2>
+                <p class="text-xs text-[#8C84A6] mb-5">
+                  Tentukan titik koordinat kantor dan batas radius meter maksimal untuk validasi scan QR karyawan.
+                </p>
+
+                <form id="form-admin-settings" onsubmit="handleSaveSettings(event)" class="space-y-4">
+                  <div>
+                    <label for="set-company-name" class="block text-xs font-bold text-[#2D264B] mb-1">Nama Perusahaan / Instansi</label>
+                    <input id="set-company-name" type="text" required class="w-full clay-input px-4 py-2.5 text-sm font-semibold text-[#2D264B]" />
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label for="set-work-start" class="block text-xs font-bold text-[#2D264B] mb-1">Jam Masuk Baku</label>
+                      <input id="set-work-start" type="time" required class="w-full clay-input px-3.5 py-2.5 text-sm font-semibold text-[#2D264B]" />
+                    </div>
+                    <div>
+                      <label for="set-late-tolerance" class="block text-xs font-bold text-[#2D264B] mb-1">Toleransi Terlambat (Menit)</label>
+                      <input id="set-late-tolerance" type="number" min="0" max="180" required class="w-full clay-input px-3.5 py-2.5 text-sm font-semibold text-[#2D264B]" />
+                    </div>
+                    <div>
+                      <label for="set-work-end" class="block text-xs font-bold text-[#2D264B] mb-1">Jam Pulang Baku</label>
+                      <input id="set-work-end" type="time" required class="w-full clay-input px-3.5 py-2.5 text-sm font-semibold text-[#2D264B]" />
+                    </div>
+                  </div>
+
+                  <div class="p-4 rounded-2xl bg-[#EFE6FA]/70 border border-purple-200 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <span class="text-xs font-extrabold text-[#4A3B8C] flex items-center gap-1.5">
+                        <i data-lucide="map-pin" class="w-4 h-4 text-[#8A70E8]"></i>
+                        <span>Titik Koordinat GPS Kantor</span>
+                      </span>
+                      <button type="button" onclick="useCurrentLocationAsOffice()" class="clay-btn-soft px-3 py-1.5 text-[11px] font-extrabold text-[#6247C7] flex items-center gap-1.5">
+                        <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+                        <span>Gunakan Posisi GPS Saya Sekarang</span>
+                      </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label for="set-office-lat" class="block text-[11px] font-bold text-[#5E567A] mb-1">Latitude Kantor</label>
+                        <input id="set-office-lat" type="number" step="any" required class="w-full clay-input px-3.5 py-2 text-xs font-mono font-bold text-[#2D264B]" />
+                      </div>
+                      <div>
+                        <label for="set-office-lng" class="block text-[11px] font-bold text-[#5E567A] mb-1">Longitude Kantor</label>
+                        <input id="set-office-lng" type="number" step="any" required class="w-full clay-input px-3.5 py-2 text-xs font-mono font-bold text-[#2D264B]" />
+                      </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center pt-1">
+                      <div>
+                        <label for="set-max-radius" class="block text-[11px] font-bold text-[#5E567A] mb-1">Radius Maksimal Absen (Meter)</label>
+                        <input id="set-max-radius" type="number" min="10" max="10000" required class="w-full clay-input px-3.5 py-2 text-xs font-extrabold text-[#2D264B]" />
+                      </div>
+                      <div class="pt-4">
+                        <label class="inline-flex items-center gap-2.5 cursor-pointer select-none">
+                          <input id="set-enforce-geofence" type="checkbox" class="w-4 h-4 accent-[#8A70E8] rounded" />
+                          <span class="text-xs font-bold text-[#2D264B]">Tolak Scan Jika Di Luar Radius</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="w-full clay-btn-primary py-3.5 text-sm font-extrabold flex items-center justify-center gap-2">
+                    <i data-lucide="save" class="w-4 h-4"></i>
+                    <span>Simpan Pengaturan Jam &amp; Radius Kantor</span>
+                  </button>
+                </form>
+              </div>
+
+              <!-- Right Info & Distance Simulator Card -->
+              <div class="lg:col-span-5 space-y-5">
+                <div class="clay-card p-6 space-y-4">
+                  <div class="w-12 h-12 clay-icon-sky text-white flex items-center justify-center">
+                    <i data-lucide="compass" class="w-6 h-6"></i>
+                  </div>
+                  <h3 class="font-display font-extrabold text-base text-[#2D264B]">Cara Kerja Validasi Radius (*Haversine*)</h3>
+                  <p class="text-xs text-[#5E567A] leading-relaxed">
+                    Saat karyawan membuka menu <strong>Scan QR Absen</strong> di HP mereka, browser membaca sensor GPS HP dan menghitung jarak garis lurus (dalam satuan meter) ke titik koordinat kantor.
+                  </p>
+                  <ul class="text-xs text-[#5E567A] space-y-2">
+                    <li class="flex items-center gap-2">
+                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                      <span><strong>Dalam Radius:</strong> Jarak &le; batas meter kantor (Absen diterima).</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                      <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                      <span><strong>Luar Radius:</strong> Jarak &gt; batas meter kantor (Ditolak jika kunci radius aktif).</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- =============================================================== -->
+          <!-- EMPLOYEE SECTION 1: BERANDA KARYAWAN (HP MASING-MASING)         -->
+          <!-- =============================================================== -->
+          <section id="sec-emp-home" class="space-y-6 hidden">
+            <!-- Hero Greeting Card for Employee (Matches "Good Morning, Mia! ☀️") -->
+            <div class="clay-hero p-6 sm:p-7 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div class="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+                <div class="w-24 h-24 rounded-3xl bg-[#FAF6F2]/90 p-3 shadow-lg flex items-center justify-center shrink-0">
+                  <svg viewBox="0 0 100 100" class="w-full h-full">
+                    <circle cx="50" cy="50" r="44" fill="#FCE5DF" />
+                    <path d="M25 50 A25 25 0 0 1 75 50" stroke="#8A70E8" stroke-width="6" fill="none" />
+                    <rect x="18" y="44" width="10" height="18" rx="5" fill="#8A70E8" />
+                    <rect x="72" y="44" width="10" height="18" rx="5" fill="#8A70E8" />
+                    <circle cx="50" cy="45" r="16" fill="#F6C4A8" />
+                    <path d="M34 40 C34 24, 66 24, 66 40" fill="#5D3A29" />
+                    <rect x="28" y="64" width="44" height="24" rx="12" fill="#9584EA" />
+                    <path d="M44 47 Q50 52 56 47" stroke="#2D264B" stroke-width="2.5" fill="none" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <div>
+                  <span id="emp-hero-status-pill" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/50 text-[#3E2F78] text-xs font-extrabold mb-2">
+                    Status Hari Ini: Belum Check-Out
+                  </span>
+                  <h2 id="emp-hero-greeting" class="font-display text-2xl sm:text-3xl font-extrabold text-[#2D264B]">
+                    Selamat Pagi, Mia! ☀️
+                  </h2>
+                  <p id="emp-hero-subtitle" class="text-sm text-[#4B3F72] font-medium mt-1">
+                    Siap memulai aktivitas hari ini? Scan QR Code kantor langsung dari HP Anda.
+                  </p>
+                  <div class="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                    <button type="button" onclick="navigateMenu('emp-scan')" class="clay-btn-primary px-6 py-3 text-xs sm:text-sm font-extrabold inline-flex items-center gap-2">
+                      <i data-lucide="camera" class="w-4 h-4"></i>
+                      <span>Scan QR Absen Sekarang</span>
+                    </button>
+                    <button type="button" onclick="navigateMenu('emp-history')" class="clay-btn-soft px-4 py-3 text-xs sm:text-sm font-extrabold inline-flex items-center gap-2">
+                      <i data-lucide="calendar-check" class="w-4 h-4 text-[#8A70E8]"></i>
+                      <span>Ajukan Izin</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Today's Check-In / Out Mini Summary Card -->
+              <div class="w-full md:w-auto bg-white/75 backdrop-blur-md rounded-3xl p-4 border border-white shadow-md grid grid-cols-2 gap-4 min-w-[230px]">
+                <div class="text-center p-2 rounded-2xl bg-[#EFE6FA]/70">
+                  <span class="text-[11px] font-bold text-[#5E567A] block">Jam Masuk</span>
+                  <strong id="emp-today-in" class="font-display text-lg font-black text-[#2D264B]">--:--</strong>
+                </div>
+                <div class="text-center p-2 rounded-2xl bg-[#FCE5DF]/70">
+                  <span class="text-[11px] font-bold text-[#5E567A] block">Jam Pulang</span>
+                  <strong id="emp-today-out" class="font-display text-lg font-black text-[#2D264B]">--:--</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4 Personal Pastel Clay KPI Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+              <div class="clay-kpi-purple p-5">
+                <div class="w-11 h-11 clay-icon-purple text-white flex items-center justify-center mb-3">
+                  <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                </div>
+                <div class="text-xs font-bold text-[#5E567A]">Total Hadir</div>
+                <div id="emp-kpi-present" class="font-display text-2xl sm:text-3xl font-black text-[#2D264B] my-1">1</div>
+                <div class="text-[11px] font-extrabold text-emerald-700">Bulan berjalan</div>
+              </div>
+
+              <div class="clay-kpi-peach p-5">
+                <div class="w-11 h-11 clay-icon-peach text-white flex items-center justify-center mb-3">
+                  <i data-lucide="timer" class="w-5 h-5"></i>
+                </div>
+                <div class="text-xs font-bold text-[#5E567A]">Terlambat</div>
+                <div id="emp-kpi-late" class="font-display text-2xl sm:text-3xl font-black text-[#2D264B] my-1">0</div>
+                <div class="text-[11px] font-extrabold text-[#C95B4E]">Tetap pertahankan!</div>
+              </div>
+
+              <div class="clay-kpi-butter p-5">
+                <div class="w-11 h-11 clay-icon-butter text-white flex items-center justify-center mb-3">
+                  <i data-lucide="navigation-2" class="w-5 h-5"></i>
+                </div>
+                <div class="text-xs font-bold text-[#5E567A]">Jarak ke Kantor</div>
+                <div id="emp-kpi-distance" class="font-display text-2xl sm:text-3xl font-black text-[#2D264B] my-1">18m</div>
+                <div id="emp-kpi-distance-sub" class="text-[11px] font-extrabold text-emerald-700">Dalam Radius Aman</div>
+              </div>
+
+              <div class="clay-kpi-sky p-5">
+                <div class="w-11 h-11 clay-icon-sky text-white flex items-center justify-center mb-3">
+                  <i data-lucide="flame" class="w-5 h-5"></i>
+                </div>
+                <div class="text-xs font-bold text-[#5E567A]">Current Streak</div>
+                <div id="emp-kpi-streak" class="font-display text-2xl sm:text-3xl font-black text-[#2D264B] my-1">5</div>
+                <div class="text-[11px] font-extrabold text-[#3A72B8]">hari berturut-turut</div>
+              </div>
+            </div>
+
+            <!-- Employee Recent History Preview -->
+            <div class="clay-card p-5 sm:p-6">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="font-display font-extrabold text-base text-[#2D264B]">Riwayat Absensi Terakhir Anda</h3>
+                  <p class="text-xs text-[#8C84A6]">Catatan waktu scan QR &amp; radius lokasi HP Anda</p>
+                </div>
+                <button type="button" onclick="navigateMenu('emp-history')" class="px-3 py-1 rounded-full bg-[#F3EEFC] text-[#6247C7] text-xs font-extrabold">
+                  Lihat Semua
+                </button>
+              </div>
+              <div id="emp-home-recent-list" class="space-y-3"></div>
+            </div>
+          </section>
+
+          <!-- =============================================================== -->
+          <!-- EMPLOYEE SECTION 2: SCAN QR ABSEN (KAMERA HP + RADAR GPS)       -->
+          <!-- =============================================================== -->
+          <section id="sec-emp-scan" class="space-y-6 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+              <!-- Left: Radar GPS & Distance Meter Card -->
+              <div class="lg:col-span-5 space-y-5">
+                <div class="clay-card p-6 space-y-4">
+                  <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EFE6FA] text-[#6247C7] text-xs font-extrabold">
+                      <i data-lucide="satellite" class="w-3.5 h-3.5"></i>
+                      <span>Radar Lokasi GPS HP</span>
+                    </span>
+                    <button type="button" onclick="refreshCurrentGPS(true)" class="clay-btn-soft px-3 py-1 text-xs font-extrabold flex items-center gap-1">
+                      <i data-lucide="refresh-cw" class="w-3 h-3 text-[#8A70E8]"></i>
+                      <span>Akurasi Ulang</span>
+                    </button>
+                  </div>
+
+                  <div class="p-4 rounded-3xl bg-[#FAF6F2] border border-purple-100 text-center space-y-2">
+                    <div id="scan-gps-badge" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold">
+                      <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                      <span>Dalam Radius Kantor</span>
+                    </div>
+                    <div class="font-display text-3xl font-black text-[#2D264B]" id="scan-gps-distance-big">
+                      18 Meter
+                    </div>
+                    <p class="text-xs text-[#5E567A]" id="scan-gps-limit-text">
+                      Batas maksimal radius kantor: <strong>100 Meter</strong>
+                    </p>
+                    <!-- Distance Bar -->
+                    <div class="w-full h-3 rounded-full bg-purple-100 overflow-hidden p-0.5">
+                      <div id="scan-gps-progress" class="h-full rounded-full bg-gradient-to-r from-emerald-400 to-[#8A70E8] transition-all duration-300" style="width: 18%;"></div>
+                    </div>
+                    <p class="text-[11px] font-mono text-[#8C84A6] pt-1" id="scan-gps-coords-text">
+                      Koordinat HP: -6.917380, 107.619190
+                    </p>
+                  </div>
+
+                  <!-- GPS Simulator for Easy Testing in Preview Mode -->
+                  <div id="scan-gps-simulator-box" class="p-3.5 rounded-2xl bg-[#FDF0D5]/80 border border-amber-200/80 text-xs space-y-2">
+                    <div class="font-extrabold text-[#7A5216] flex items-center gap-1.5">
+                      <i data-lucide="Sliders" class="w-3.5 h-3.5"></i>
+                      <span>Simulasi Posisi GPS (Untuk Uji Coba Radius):</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                      <button type="button" onclick="simulateGPSOffset('inside')" class="py-2 px-3 rounded-xl bg-white text-emerald-700 font-extrabold shadow-sm hover:bg-emerald-50 transition">
+                        Di Kantor (18m)
+                      </button>
+                      <button type="button" onclick="simulateGPSOffset('outside')" class="py-2 px-3 rounded-xl bg-white text-rose-600 font-extrabold shadow-sm hover:bg-rose-50 transition">
+                        Luar Radius (260m)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Camera QR Scanner & Manual Fallback -->
+              <div class="lg:col-span-7 clay-card p-6 space-y-5">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h2 class="font-display text-lg sm:text-xl font-extrabold text-[#2D264B]">Pemindai QR Code Absensi</h2>
+                    <p class="text-xs text-[#8C84A6]">Pilih jenis absen lalu arahkan kamera HP ke QR Code kantor.</p>
+                  </div>
+                </div>
+
+                <!-- Check-In vs Check-Out Mode Selector -->
+                <div class="grid grid-cols-2 gap-3 p-1.5 rounded-2xl bg-[#ECE4FA]">
+                  <button type="button" id="btn-mode-checkin" onclick="setScanAttendanceMode('CHECK_IN')" class="py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold clay-nav-active flex items-center justify-center gap-2">
+                    <i data-lucide="log-in" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Absen Masuk (Check-In)</span>
+                  </button>
+                  <button type="button" id="btn-mode-checkout" onclick="setScanAttendanceMode('CHECK_OUT')" class="py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-[#5E567A] flex items-center justify-center gap-2">
+                    <i data-lucide="log-out" class="w-4 h-4 text-rose-500"></i>
+                    <span>Absen Pulang (Check-Out)</span>
+                  </button>
+                </div>
+
+                <!-- Camera Viewport Container -->
+                <div class="rounded-3xl bg-[#2D264B] text-white p-4 flex flex-col items-center justify-center min-h-[250px] relative overflow-hidden shadow-inner">
+                  <div id="qr-reader-viewport" class="w-full max-w-sm rounded-2xl overflow-hidden"></div>
+                  <div id="qr-camera-placeholder" class="text-center space-y-3 py-6">
+                    <div class="w-16 h-16 rounded-3xl bg-white/10 mx-auto flex items-center justify-center">
+                      <i data-lucide="camera" class="w-8 h-8 text-[#C9BBF7]"></i>
+                    </div>
+                    <div class="text-sm font-bold">Kamera Scanner QR Siap</div>
+                    <p class="text-xs text-white/70 max-w-xs mx-auto">
+                      Tekan tombol di bawah untuk menyalakan kamera HP Anda dan memindai QR Code.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                  <button type="button" id="btn-start-camera" onclick="startCameraScanner()" class="clay-btn-primary px-6 py-3 text-xs sm:text-sm font-extrabold flex items-center gap-2">
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                    <span>Nyalakan Kamera HP</span>
+                  </button>
+                  <button type="button" id="btn-stop-camera" onclick="stopCameraScanner()" class="hidden clay-btn-pink px-6 py-3 text-xs sm:text-sm font-extrabold flex items-center gap-2">
+                    <i data-lucide="camera-off" class="w-4 h-4"></i>
+                    <span>Matikan Kamera</span>
+                  </button>
+                </div>
+
+                <!-- Manual / Instant Scan Input (Helpful if camera is blocked in iframe or damaged) -->
+                <div class="pt-4 border-t border-purple-100">
+                  <label for="manual-qr-code-input" class="block text-xs font-bold text-[#2D264B] mb-2">
+                    Atau Masukkan / Gunakan Token QR Kantor Secara Langsung:
+                  </label>
+                  <div class="flex flex-col sm:flex-row gap-2.5">
+                    <input id="manual-qr-code-input" type="text" placeholder="Ketik kode token QR (misal: QR-HKN-2026)" class="flex-1 clay-input px-4 py-2.5 text-xs font-mono font-bold text-[#2D264B]" />
+                    <button type="button" onclick="submitManualTokenScan()" class="clay-btn-primary px-5 py-2.5 text-xs font-extrabold flex items-center justify-center gap-1.5 shrink-0">
+                      <i data-lucide="check-circle" class="w-4 h-4"></i>
+                      <span>Kirim Scan QR</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- =============================================================== -->
+          <!-- EMPLOYEE SECTION 3: RIWAYAT & PENGAJUAN IZIN SAYA               -->
+          <!-- =============================================================== -->
+          <section id="sec-emp-history" class="space-y-6 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <!-- Form Pengajuan Izin / Sakit -->
+              <div class="lg:col-span-5 clay-card p-6">
+                <h3 class="font-display font-extrabold text-base text-[#2D264B] mb-1">Form Pengajuan Izin / Sakit</h3>
+                <p class="text-xs text-[#8C84A6] mb-4">Kirim permohonan izin tidak hadir atau sakit langsung ke HRD.</p>
+                <form id="form-emp-leave" onsubmit="handleEmployeeLeaveSubmit(event)" class="space-y-4">
+                  <div>
+                    <label for="leave-date" class="block text-xs font-bold text-[#2D264B] mb-1">Tanggal Izin</label>
+                    <input id="leave-date" type="date" required class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold text-[#2D264B]" />
+                  </div>
+                  <div>
+                    <label for="leave-status" class="block text-xs font-bold text-[#2D264B] mb-1">Kategori</label>
+                    <select id="leave-status" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold text-[#2D264B]">
+                      <option value="Izin">Izin Keperluan Pribadi / Dinas</option>
+                      <option value="Sakit">Sakit (Istirahat Medis)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="leave-notes" class="block text-xs font-bold text-[#2D264B] mb-1">Keterangan Lengkap</label>
+                    <textarea id="leave-notes" rows="3" required placeholder="Tuliskan alasan izin atau sakit..." class="w-full clay-input p-3.5 text-xs font-semibold text-[#2D264B]"></textarea>
+                  </div>
+                  <button type="submit" class="w-full clay-btn-primary py-3 text-xs font-extrabold flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                    <span>Kirim Pengajuan</span>
+                  </button>
+                </form>
+              </div>
+
+              <!-- Daftar Riwayat Kehadiran Pribadi -->
+              <div class="lg:col-span-7 clay-card p-6">
+                <h3 class="font-display font-extrabold text-base text-[#2D264B] mb-4">Seluruh Riwayat Absensi Saya</h3>
+                <div id="emp-full-history-list" class="space-y-3"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- =============================================================== -->
+          <!-- EMPLOYEE SECTION 4: PROFIL & KARTU ID DIGITAL KARYAWAN          -->
+          <!-- =============================================================== -->
+          <section id="sec-emp-profile" class="space-y-6 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div class="lg:col-span-6 clay-card p-6 sm:p-8 flex flex-col items-center text-center">
+                <div class="w-24 h-24 rounded-full bg-[#EFE6FA] text-[#6247C7] font-display font-black text-3xl flex items-center justify-center shadow-md mb-4" id="profile-avatar-big">
+                  M
+                </div>
+                <h2 id="profile-name-big" class="font-display text-xl font-extrabold text-[#2D264B]">Mia Putri Pratiwi</h2>
+                <p id="profile-position-big" class="text-xs font-bold text-[#8A70E8] mt-0.5">UI/UX Designer • Product Design</p>
+
+                <div class="w-full mt-6 p-4 rounded-2xl bg-[#FAF6F2] border border-purple-100 text-left space-y-2.5 text-xs">
+                  <div class="flex justify-between">
+                    <span class="text-[#8C84A6]">Nomor Induk Karyawan (NIK):</span>
+                    <strong id="profile-nik" class="font-mono text-[#2D264B]">EMP001</strong>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-[#8C84A6]">Username Login:</span>
+                    <strong id="profile-username" class="text-[#2D264B]">mia</strong>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-[#8C84A6]">Divisi:</span>
+                    <strong id="profile-division" class="text-[#2D264B]">Product Design</strong>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-[#8C84A6]">Status Akun:</span>
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-extrabold">Aktif</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lg:col-span-6 clay-card p-6 sm:p-8">
+                <h3 class="font-display font-extrabold text-base text-[#2D264B] mb-1">Perbarui Password Akun</h3>
+                <p class="text-xs text-[#8C84A6] mb-5">Ubah password login absensi HP Anda secara berkala.</p>
+                <form id="form-emp-password" onsubmit="handleUpdateEmployeePassword(event)" class="space-y-4">
+                  <div>
+                    <label for="emp-new-password" class="block text-xs font-bold text-[#2D264B] mb-1">Password Baru</label>
+                    <input id="emp-new-password" type="password" required minlength="4" placeholder="Minimal 4 karakter" class="w-full clay-input px-4 py-3 text-xs font-semibold text-[#2D264B]" />
+                  </div>
+                  <div>
+                    <label for="emp-confirm-password" class="block text-xs font-bold text-[#2D264B] mb-1">Konfirmasi Password Baru</label>
+                    <input id="emp-confirm-password" type="password" required minlength="4" placeholder="Ulangi password baru" class="w-full clay-input px-4 py-3 text-xs font-semibold text-[#2D264B]" />
+                  </div>
+                  <button type="submit" class="w-full clay-btn-primary py-3.5 text-xs font-extrabold flex items-center justify-center gap-2">
+                    <i data-lucide="key" class="w-4 h-4"></i>
+                    <span>Simpan Password Baru</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          </section>
+
+          <!-- Bottom Claymorphic Discover / Info Banner (Matches "Discover new music" bar in Reference Image) -->
+          <div class="clay-hero p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-[#A590F5] via-[#B49FF8] to-[#C8B5FA]">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-[#FBD07C] text-[#6E470B] flex items-center justify-center shadow-md shrink-0 font-display font-black text-xl">
+                ★
+              </div>
+              <div>
+                <h4 class="font-display font-extrabold text-sm sm:text-base text-white">
+                  Sistem Absensi QR &amp; Radius GPS Terintegrasi
+                </h4>
+                <p class="text-xs text-white/90" id="footer-banner-subtext">
+                  Pastikan izin lokasi browser diaktifkan untuk akurasi titik koordinat kantor.
+                </p>
+              </div>
+            </div>
+            <button type="button" id="btn-footer-action" onclick="handleFooterBannerAction()" class="px-5 py-2 rounded-full bg-white/25 hover:bg-white/35 text-white text-xs font-extrabold border border-white/50 backdrop-blur-sm transition">
+              Buka Scanner / QR
+            </button>
+          </div>
+
+        </div>
+      </main>
+
+      <!-- MOBILE FLOATING BOTTOM NAVIGATION BAR (Shown on screens <= 768px) -->
+      <nav id="mobile-bottom-nav" class="fixed bottom-3 inset-x-3 clay-sidebar px-3 py-2 flex items-center justify-around z-40 shadow-2xl border border-white/30"></nav>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 1: ADD / EDIT EMPLOYEE (ADMIN CRUD)                           -->
+    <!-- =================================================================== -->
+    <div id="modal-employee" class="hidden fixed inset-0 z-50 bg-[#2D264B]/50 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="w-full max-w-md clay-canvas p-6 space-y-4 border border-white">
+        <div class="flex items-center justify-between">
+          <h3 id="modal-employee-title" class="font-display font-extrabold text-lg text-[#2D264B]">Tambah Karyawan</h3>
+          <button type="button" onclick="closeEmployeeModal()" class="w-8 h-8 rounded-full bg-[#EFE6FA] text-[#4A3B8C] flex items-center justify-center font-bold">✕</button>
+        </div>
+        <form id="form-employee-crud" onsubmit="handleSaveEmployee(event)" class="space-y-3.5">
+          <input type="hidden" id="emp-crud-id" />
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="emp-crud-nik" class="block text-xs font-bold text-[#2D264B] mb-1">NIK Karyawan</label>
+              <input id="emp-crud-nik" type="text" required placeholder="EMP003" class="w-full clay-input px-3.5 py-2.5 text-xs font-mono font-bold" />
+            </div>
+            <div>
+              <label for="emp-crud-username" class="block text-xs font-bold text-[#2D264B] mb-1">Username Login</label>
+              <input id="emp-crud-username" type="text" required placeholder="budi" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold" />
+            </div>
+          </div>
+          <div>
+            <label for="emp-crud-name" class="block text-xs font-bold text-[#2D264B] mb-1">Nama Lengkap</label>
+            <input id="emp-crud-name" type="text" required placeholder="Nama lengkap karyawan" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="emp-crud-division" class="block text-xs font-bold text-[#2D264B] mb-1">Divisi</label>
+              <input id="emp-crud-division" type="text" required placeholder="Engineering" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold" />
+            </div>
+            <div>
+              <label for="emp-crud-position" class="block text-xs font-bold text-[#2D264B] mb-1">Jabatan</label>
+              <input id="emp-crud-position" type="text" required placeholder="Frontend Dev" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold" />
+            </div>
+          </div>
+          <div>
+            <label for="emp-crud-password" class="block text-xs font-bold text-[#2D264B] mb-1">Password Login HP</label>
+            <input id="emp-crud-password" type="text" required placeholder="Password karyawan" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold" />
+          </div>
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeEmployeeModal()" class="clay-btn-soft px-4 py-2.5 text-xs font-extrabold">Batal</button>
+            <button type="submit" class="clay-btn-primary px-5 py-2.5 text-xs font-extrabold">Simpan Karyawan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 2: MANUAL ATTENDANCE ENTRY / CORRECTION (ADMIN)               -->
+    <!-- =================================================================== -->
+    <div id="modal-manual-attendance" class="hidden fixed inset-0 z-50 bg-[#2D264B]/50 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="w-full max-w-md clay-canvas p-6 space-y-4 border border-white">
+        <div class="flex items-center justify-between">
+          <h3 class="font-display font-extrabold text-lg text-[#2D264B]">Input / Koreksi Log Absensi</h3>
+          <button type="button" onclick="closeManualAttendanceModal()" class="w-8 h-8 rounded-full bg-[#EFE6FA] text-[#4A3B8C] flex items-center justify-center font-bold">✕</button>
+        </div>
+        <form id="form-manual-attendance" onsubmit="handleSaveManualAttendance(event)" class="space-y-3.5">
+          <div>
+            <label for="man-emp-id" class="block text-xs font-bold text-[#2D264B] mb-1">Pilih Karyawan</label>
+            <select id="man-emp-id" required class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold"></select>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="man-date" class="block text-xs font-bold text-[#2D264B] mb-1">Tanggal</label>
+              <input id="man-date" type="date" required class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold" />
+            </div>
+            <div>
+              <label for="man-status" class="block text-xs font-bold text-[#2D264B] mb-1">Status</label>
+              <select id="man-status" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold">
+                <option value="Hadir">Hadir</option>
+                <option value="Terlambat">Terlambat</option>
+                <option value="Izin">Izin</option>
+                <option value="Sakit">Sakit</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label for="man-check-in" class="block text-xs font-bold text-[#2D264B] mb-1">Jam Masuk (Opsional)</label>
+              <input id="man-check-in" type="time" value="08:00" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold" />
+            </div>
+            <div>
+              <label for="man-check-out" class="block text-xs font-bold text-[#2D264B] mb-1">Jam Pulang (Opsional)</label>
+              <input id="man-check-out" type="time" value="17:00" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold" />
+            </div>
+          </div>
+          <div>
+            <label for="man-notes" class="block text-xs font-bold text-[#2D264B] mb-1">Catatan</label>
+            <input id="man-notes" type="text" placeholder="Koreksi HRD / Dinas Luar" class="w-full clay-input px-3.5 py-2.5 text-xs font-semibold" />
+          </div>
+          <div class="flex justify-end gap-2 pt-2">
+            <button type="button" onclick="closeManualAttendanceModal()" class="clay-btn-soft px-4 py-2.5 text-xs font-extrabold">Batal</button>
+            <button type="submit" class="clay-btn-primary px-5 py-2.5 text-xs font-extrabold">Simpan Log</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- =================================================================== -->
+    <!-- MODAL 3: CONFIRMATION & INFO MODAL (REPLACES BLOCKED ALERT/CONFIRM) -->
+    <!-- =================================================================== -->
+    <div id="modal-confirm" class="hidden fixed inset-0 z-50 bg-[#2D264B]/50 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="w-full max-w-sm clay-canvas p-6 text-center space-y-4 border border-white">
+        <div class="w-12 h-12 rounded-2xl clay-icon-peach text-white mx-auto flex items-center justify-center">
+          <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+        </div>
+        <h3 id="confirm-modal-title" class="font-display font-extrabold text-base text-[#2D264B]">Konfirmasi Tindakan</h3>
+        <p id="confirm-modal-desc" class="text-xs text-[#5E567A]">Apakah Anda yakin ingin melanjutkan?</p>
+        <div class="flex items-center justify-center gap-3 pt-2">
+          <button type="button" onclick="closeConfirmModal()" class="clay-btn-soft px-4 py-2 text-xs font-extrabold">Batal</button>
+          <button type="button" id="btn-confirm-yes" onclick="executeConfirmCallback()" class="clay-btn-pink px-5 py-2 text-xs font-extrabold">Ya, Lanjutkan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed top-14 right-4 z-[1000000] space-y-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- APPLICATION JAVASCRIPT (MODULE WITH SUPABASE & HYBRID AUTH)           -->
+  <!-- ===================================================================== -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+    // =====================================================================
+    // KONFIGURASI APLIKASI (WAJIB SESUAI INSTRUKSI SKILL)
+    // =====================================================================
+    const IS_PREVIEW = false; // Ubah menjadi false SAAT DEPLOY agar mode preview & data dummy hilang dan terhubung 100% ke Supabase
+    const SUPABASE_URL = "https://hlwaefjyrguavkjcmcmy.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_12xetP0YetD00AzxtxDjTg_P-NPqKdB";
+
+    const supabase = (!IS_PREVIEW && SUPABASE_URL && SUPABASE_URL !== "URL_SUPABASE_ANDA")
+      ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      : null;
+
+    // =====================================================================
+    // STATE APLIKASI & DATA DUMMY MINIMALIS (MAKSIMAL 1-2 BARIS PER TABEL)
+    // =====================================================================
+    const TODAY_STR = new Date().toISOString().slice(0, 10);
+
+    const INITIAL_PREVIEW_DATA = {
+      settings: {
+        id: 1,
+        company_name: "Aplikasi Absensi Logistik 99",
+        work_start_time: "08:00",
+        late_tolerance_minutes: 15,
+        work_end_time: "17:00",
+        office_lat: -6.917500,
+        office_lng: 107.619100,
+        max_radius_meters: 100,
+        enforce_geofence: true
+      },
+      employees: [
+        {
+          id: "emp-uuid-1",
+          nik: "EMP001",
+          username: "mia",
+          password: "123",
+          full_name: "Mia Putri Pratiwi",
+          division: "Product Design",
+          position: "UI/UX Designer",
+          avatar_color: "#8A70E8",
+          is_active: true
+        },
+        {
+          id: "emp-uuid-2",
+          nik: "EMP002",
+          username: "raka",
+          password: "123",
+          full_name: "Raka Pratama",
+          division: "Engineering",
+          position: "Fullstack Engineer",
+          avatar_color: "#EB7A90",
+          is_active: true
+        }
+      ],
+      qr_sessions: [
+        {
+          id: "qr-uuid-1",
+          session_code: "QR-HKN-2026",
+          session_date: TODAY_STR,
+          qr_type: "ALL",
+          is_active: true
+        }
+      ],
+      attendance_logs: [
+        {
+          id: "log-uuid-1",
+          employee_id: "emp-uuid-1",
+          attendance_date: TODAY_STR,
+          check_in_time: `${TODAY_STR}T07:52:00`,
+          check_out_time: null,
+          status: "Hadir",
+          notes: "Scan QR via HP Android",
+          qr_code_used: "QR-HKN-2026",
+          check_in_lat: -6.917380,
+          check_in_lng: 107.619190,
+          check_in_distance_m: 18,
+          check_out_lat: null,
+          check_out_lng: null,
+          check_out_distance_m: null,
+          is_within_radius: true
+        },
+        {
+          id: "log-uuid-2",
+          employee_id: "emp-uuid-2",
+          attendance_date: TODAY_STR,
+          check_in_time: `${TODAY_STR}T08:04:00`,
+          check_out_time: `${TODAY_STR}T17:05:00`,
+          status: "Hadir",
+          notes: "Scan QR Tepat Waktu",
+          qr_code_used: "QR-HKN-2026",
+          check_in_lat: -6.917610,
+          check_in_lng: 107.619220,
+          check_in_distance_m: 22,
+          check_out_lat: -6.917590,
+          check_out_lng: 107.619200,
+          check_out_distance_m: 19,
+          is_within_radius: true
+        }
+      ]
+    };
+
+    let appState = {
+      currentUser: null, // { role: 'admin' | 'employee', data: {...} }
+      activeMenu: "dashboard",
+      loginTab: "employee",
+      scanMode: "CHECK_IN",
+      searchQuery: "",
+      settings: IS_PREVIEW ? structuredClone(INITIAL_PREVIEW_DATA.settings) : {
+        id: 1,
+        company_name: "Instansi Anda",
+        work_start_time: "08:00",
+        late_tolerance_minutes: 15,
+        work_end_time: "17:00",
+        office_lat: -6.917500,
+        office_lng: 107.619100,
+        max_radius_meters: 100,
+        enforce_geofence: true
+      },
+      employees: IS_PREVIEW ? structuredClone(INITIAL_PREVIEW_DATA.employees) : [],
+      qr_sessions: IS_PREVIEW ? structuredClone(INITIAL_PREVIEW_DATA.qr_sessions) : [],
+      attendance_logs: IS_PREVIEW ? structuredClone(INITIAL_PREVIEW_DATA.attendance_logs) : [],
+      gps: {
+        lat: -6.917380,
+        lng: 107.619190,
+        distance_m: 18,
+        is_within_radius: true,
+        source: "Simulasi Kantor"
+      },
+      html5QrScanner: null,
+      cameraRunning: false,
+      confirmActionCallback: null
+    };
+
+    // =====================================================================
+    // RUMUS HAVERSINE (MENGHITUNG JARAK METER DARI TITIK KANTOR)
+    // =====================================================================
+    function calculateHaversineMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000; // Radius Bumi dalam meter
+      const toRad = (deg) => (deg * Math.PI) / 180;
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return Math.round(R * c);
+    }
+
+    function recalculateGPSRadius() {
+      const dist = calculateHaversineMeters(
+        Number(appState.gps.lat),
+        Number(appState.gps.lng),
+        Number(appState.settings.office_lat),
+        Number(appState.settings.office_lng)
+      );
+      appState.gps.distance_m = dist;
+      appState.gps.is_within_radius = dist <= Number(appState.settings.max_radius_meters || 100);
+      updateGPSUI();
+    }
+
+    function updateGPSUI() {
+      const dist = appState.gps.distance_m;
+      const maxR = Number(appState.settings.max_radius_meters || 100);
+      const inside = appState.gps.is_within_radius;
+
+      const headerDist = document.getElementById("header-gps-distance");
+      if (headerDist) {
+        headerDist.textContent = `${dist}m (${inside ? "Aman" : "Luar"})`;
+      }
+
+      const badge = document.getElementById("scan-gps-badge");
+      if (badge) {
+        badge.className = inside
+          ? "inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold"
+          : "inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-extrabold";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full ${inside ? "bg-emerald-500" : "bg-rose-500"}"></span><span>${inside ? "Dalam Radius Kantor" : "Di Luar Radius Kantor"}</span>`;
+      }
+
+      const bigDist = document.getElementById("scan-gps-distance-big");
+      if (bigDist) bigDist.textContent = `${dist} Meter`;
+
+      const limitText = document.getElementById("scan-gps-limit-text");
+      if (limitText) {
+        limitText.innerHTML = `Batas maksimal radius kantor: <strong>${maxR} Meter</strong>`;
+      }
+
+      const bar = document.getElementById("scan-gps-progress");
+      if (bar) {
+        const pct = Math.min(100, Math.max(6, Math.round((dist / Math.max(1, maxR)) * 100)));
+        bar.style.width = `${pct}%`;
+        bar.className = inside
+          ? "h-full rounded-full bg-gradient-to-r from-emerald-400 to-[#8A70E8] transition-all duration-300"
+          : "h-full rounded-full bg-gradient-to-r from-amber-400 to-rose-500 transition-all duration-300";
+      }
+
+      const coordsText = document.getElementById("scan-gps-coords-text");
+      if (coordsText) {
+        coordsText.textContent = `Koordinat HP: ${Number(appState.gps.lat).toFixed(6)}, ${Number(appState.gps.lng).toFixed(6)}`;
+      }
+
+      const empKpiDist = document.getElementById("emp-kpi-distance");
+      const empKpiDistSub = document.getElementById("emp-kpi-distance-sub");
+      if (empKpiDist) empKpiDist.textContent = `${dist}m`;
+      if (empKpiDistSub) {
+        empKpiDistSub.textContent = inside ? "Dalam Radius Aman" : "Di Luar Radius Kantor";
+        empKpiDistSub.className = inside ? "text-[11px] font-extrabold text-emerald-700" : "text-[11px] font-extrabold text-rose-600";
+      }
+    }
+
+    function refreshCurrentGPS(showFeedback = false) {
+      if (!navigator.geolocation) {
+        recalculateGPSRadius();
+        if (showFeedback) showToast("Sensor GPS browser tidak tersedia, menggunakan titik koordinat terakhir.", "info");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          appState.gps.lat = pos.coords.latitude;
+          appState.gps.lng = pos.coords.longitude;
+          appState.gps.source = "GPS Perangkat";
+          recalculateGPSRadius();
+          if (showFeedback) {
+            showToast(`Lokasi GPS diperbarui: ${appState.gps.distance_m}m dari kantor.`, "success");
+          }
+        },
+        () => {
+          recalculateGPSRadius();
+          if (showFeedback) {
+            showToast(`Menggunakan koordinat aktif (${appState.gps.distance_m}m dari kantor).`, "info");
+          }
+        },
+        { enableHighAccuracy: true, timeout: 6000 }
+      );
+    }
+
+    function simulateGPSOffset(mode) {
+      if (mode === "inside") {
+        appState.gps.lat = Number(appState.settings.office_lat) + 0.00012;
+        appState.gps.lng = Number(appState.settings.office_lng) + 0.00009;
+      } else {
+        appState.gps.lat = Number(appState.settings.office_lat) + 0.0022;
+        appState.gps.lng = Number(appState.settings.office_lng) + 0.0011;
+      }
+      recalculateGPSRadius();
+      showToast(
+        mode === "inside"
+          ? `Simulasi GPS diatur ke Dalam Radius (${appState.gps.distance_m}m).`
+          : `Simulasi GPS diatur ke Luar Radius (${appState.gps.distance_m}m).`,
+        mode === "inside" ? "success" : "warning"
+      );
+    }
+
+    // =====================================================================
+    // TOAST & MODAL HELPERS (NO BLOCKED ALERT/CONFIRM)
+    // =====================================================================
+    function showToast(message, type = "info") {
+      const container = document.getElementById("toast-container");
+      if (!container) return;
+      const colors = {
+        success: "bg-emerald-600 text-white",
+        error: "bg-rose-600 text-white",
+        warning: "bg-amber-500 text-white",
+        info: "bg-[#6C52D8] text-white"
+      };
+      const el = document.createElement("div");
+      el.className = `pointer-events-auto px-4 py-3 rounded-2xl shadow-xl text-xs font-extrabold flex items-center justify-between gap-3 transition-all ${colors[type] || colors.info}`;
+      el.innerHTML = `<span>${message}</span>`;
+      container.appendChild(el);
+      setTimeout(() => {
+        el.remove();
+      }, 3600);
+    }
+
+    function openConfirmModal(title, desc, onConfirm) {
+      appState.confirmActionCallback = onConfirm;
+      document.getElementById("confirm-modal-title").textContent = title;
+      document.getElementById("confirm-modal-desc").textContent = desc;
+      document.getElementById("modal-confirm").classList.remove("hidden");
+    }
+
+    function closeConfirmModal() {
+      appState.confirmActionCallback = null;
+      document.getElementById("modal-confirm").classList.add("hidden");
+    }
+
+    function executeConfirmCallback() {
+      const cb = appState.confirmActionCallback;
+      closeConfirmModal();
+      if (typeof cb === "function") cb();
+    }
+
+    function openNotificationModal() {
+      const activeQR = getActiveQRSession();
+      const insideText = appState.gps.is_within_radius ? "Dalam Radius Aman" : "Di Luar Radius";
+      showToast(`Token QR Aktif: ${activeQR ? activeQR.session_code : "-"} | Status GPS: ${appState.gps.distance_m}m (${insideText})`, "info");
+    }
+
+    // =====================================================================
+    // SUPABASE REAL DATA SYNCHRONIZATION (WHEN IS_PREVIEW = false)
+    // =====================================================================
+    async function loadAllSupabaseData() {
+      if (IS_PREVIEW || !supabase) return;
+      try {
+        const [setRes, empRes, qrRes, logRes] = await Promise.all([
+          supabase.from("attendance_settings").select("*").limit(1).maybeSingle(),
+          supabase.from("employees").select("*").order("created_at", { ascending: true }),
+          supabase.from("qr_sessions").select("*").order("created_at", { ascending: false }),
+          supabase.from("attendance_logs").select("*").order("created_at", { ascending: false })
+        ]);
+        if (setRes.data) appState.settings = setRes.data;
+        if (empRes.data) appState.employees = empRes.data;
+        if (qrRes.data) appState.qr_sessions = qrRes.data;
+        if (logRes.data) appState.attendance_logs = logRes.data;
+        recalculateGPSRadius();
+        renderAllViews();
+      } catch (err) {
+        showToast("Gagal memuat data dari Supabase: " + (err.message || "Error"), "error");
+      }
+    }
+
+    // =====================================================================
+    // HYBRID AUTHENTICATION FLOW (ADMIN SUPABASE AUTH + USER DB TABLE)
+    // =====================================================================
+    function switchLoginRole(role) {
+      appState.loginTab = role;
+      const tabEmp = document.getElementById("tab-login-employee");
+      const tabAdm = document.getElementById("tab-login-admin");
+      const formEmp = document.getElementById("form-login-employee");
+      const formAdm = document.getElementById("form-login-admin");
+
+      if (role === "employee") {
+        tabEmp.className = "py-2.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition-all clay-nav-active flex items-center justify-center gap-2";
+        tabAdm.className = "py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-[#5E567A] hover:text-[#2D264B] transition-all flex items-center justify-center gap-2";
+        formEmp.classList.remove("hidden");
+        formAdm.classList.add("hidden");
+      } else {
+        tabAdm.className = "py-2.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition-all clay-nav-active flex items-center justify-center gap-2";
+        tabEmp.className = "py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold text-[#5E567A] hover:text-[#2D264B] transition-all flex items-center justify-center gap-2";
+        formAdm.classList.remove("hidden");
+        formEmp.classList.add("hidden");
+      }
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById("admin-login-email").value.trim();
+      const password = document.getElementById("admin-login-pass").value;
+
+      if (IS_PREVIEW) {
+        loginSuccess({
+          role: "admin",
+          data: {
+            email: email || "admin@harmoni.id",
+            full_name: "Admin HRD",
+            position: "HR Manager"
+          }
+        });
+        return;
+      }
+
+      if (!supabase) {
+        showToast("Konfigurasi SUPABASE_URL dan SUPABASE_ANON_KEY belum diisi.", "error");
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        await loadAllSupabaseData();
+        loginSuccess({
+          role: "admin",
+          data: {
+            email: data.user.email,
+            full_name: "Admin HRD",
+            position: "Administrator"
+          }
+        });
+      } catch (err) {
+        showToast("Login Admin gagal: " + (err.message || "Periksa email & password"), "error");
+      }
+    }
+
+    async function handleEmployeeLogin(e) {
+      e.preventDefault();
+      const identifier = document.getElementById("emp-login-id").value.trim();
+      const password = document.getElementById("emp-login-pass").value;
+
+      if (IS_PREVIEW) {
+        const found = appState.employees.find(
+          (emp) =>
+            (emp.username.toLowerCase() === identifier.toLowerCase() ||
+              emp.nik.toLowerCase() === identifier.toLowerCase()) &&
+            emp.password === password &&
+            emp.is_active !== false
+        );
+        if (!found) {
+          showToast("NIK/Username atau Password tidak cocok. (Coba: mia / 123)", "error");
+          return;
+        }
+        loginSuccess({ role: "employee", data: found });
+        return;
+      }
+
+      if (!supabase) {
+        showToast("Konfigurasi SUPABASE_URL dan SUPABASE_ANON_KEY belum diisi.", "error");
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("employees")
+          .select("*")
+          .or(`username.eq.${identifier},nik.eq.${identifier}`)
+          .eq("password", password)
+          .eq("is_active", true)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (!data) {
+          showToast("NIK/Username atau Password salah, atau akun tidak aktif.", "error");
+          return;
+        }
+        await loadAllSupabaseData();
+        loginSuccess({ role: "employee", data });
+      } catch (err) {
+        showToast("Gagal memvalidasi kredensial karyawan: " + (err.message || "Error"), "error");
+      }
+    }
+
+    function quickPreviewLogin(role) {
+      if (!IS_PREVIEW) return;
+      if (role === "admin") {
+        loginSuccess({
+          role: "admin",
+          data: {
+            email: "hrd@harmoni.id",
+            full_name: "Admin HRD",
+            position: "HR Manager"
+          }
+        });
+      } else {
+        const emp = appState.employees[0];
+        loginSuccess({ role: "employee", data: emp });
+      }
+    }
+
+    function loginSuccess(sessionObj) {
+      appState.currentUser = sessionObj;
+      try {
+        localStorage.setItem("clayattend_session", JSON.stringify(sessionObj));
+      } catch (_) {}
+
+      document.getElementById("auth-view").classList.add("hidden");
+      document.getElementById("app-shell").classList.remove("hidden");
+
+      const defaultMenu = sessionObj.role === "admin" ? "dashboard" : "emp-home";
+      recalculateGPSRadius();
+      renderNavigation();
+      navigateMenu(defaultMenu);
+      renderAllViews();
+      showToast(`Selamat datang, ${sessionObj.data.full_name}!`, "success");
+    }
+
+    async function handleLogout() {
+      await stopCameraScanner();
+      if (!IS_PREVIEW && supabase && appState.currentUser?.role === "admin") {
+        try {
+          await supabase.auth.signOut();
+        } catch (_) {}
+      }
+      appState.currentUser = null;
+      try {
+        localStorage.removeItem("clayattend_session");
+      } catch (_) {}
+
+      document.getElementById("app-shell").classList.add("hidden");
+      document.getElementById("auth-view").classList.remove("hidden");
+      showToast("Anda telah keluar dari sesi aplikasi.", "info");
+    }
+
+    // =====================================================================
+    // NAVIGATION & MENU ROUTING (100% AGREED MENUS)
+    // =====================================================================
+    const ADMIN_MENUS = [
+      { id: "dashboard", label: "Dashboard", icon: "home" },
+      { id: "qr-generator", label: "Layar QR Absen", icon: "qr-code" },
+      { id: "employees", label: "Data Karyawan", icon: "users" },
+      { id: "attendance-logs", label: "Rekap & Radius", icon: "clipboard-check" },
+      { id: "settings", label: "Pengaturan GPS", icon: "settings" }
+    ];
+
+    const EMPLOYEE_MENUS = [
+      { id: "emp-home", label: "Beranda", icon: "home" },
+      { id: "emp-scan", label: "Scan QR Absen", icon: "scan-line" },
+      { id: "emp-history", label: "Riwayat & Izin", icon: "calendar-clock" },
+      { id: "emp-profile", label: "Profil Saya", icon: "user-check" }
+    ];
+
+    function renderNavigation() {
+      if (!appState.currentUser) return;
+      const isAdm = appState.currentUser.role === "admin";
+      const menus = isAdm ? ADMIN_MENUS : EMPLOYEE_MENUS;
+      const userData = appState.currentUser.data;
+
+      // Update Sidebar Profile Header
+      const firstName = (userData.full_name || "User").split(" ")[0];
+      document.getElementById("sidebar-avatar").textContent = firstName.charAt(0).toUpperCase();
+      document.getElementById("sidebar-greeting").textContent = `Hi, ${firstName}! 👋`;
+      document.getElementById("sidebar-role-badge").textContent = isAdm
+        ? "Administrator HRD"
+        : `${userData.position || "Karyawan"} • ${userData.nik || ""}`;
+
+      // Desktop Sidebar Nav
+      const sideContainer = document.getElementById("sidebar-nav-list");
+      sideContainer.innerHTML = menus
+        .map((m) => {
+          const active = appState.activeMenu === m.id;
+          return `
+            <button type="button" onclick="navigateMenu('${m.id}')" class="w-full py-3 px-4 flex items-center gap-3 text-xs font-bold transition-all ${
+              active
+                ? "clay-nav-active"
+                : "text-white/90 hover:bg-white/15 rounded-2xl"
+            }">
+              <i data-lucide="${m.icon}" class="w-4 h-4"></i>
+              <span>${m.label}</span>
+            </button>
+          `;
+        })
+        .join("");
+
+      // Mobile Bottom Bar Nav
+      const mobContainer = document.getElementById("mobile-bottom-nav");
+      mobContainer.innerHTML = menus
+        .map((m) => {
+          const active = appState.activeMenu === m.id;
+          return `
+            <button type="button" onclick="navigateMenu('${m.id}')" class="flex flex-col items-center justify-center py-1.5 px-3 rounded-2xl text-[10px] font-extrabold transition-all ${
+              active
+                ? "bg-[#FAF6F2] text-[#4B3C8E] shadow-md scale-105"
+                : "text-white/85"
+            }">
+              <i data-lucide="${m.icon}" class="w-4 h-4 mb-0.5"></i>
+              <span>${m.label}</span>
+            </button>
+          `;
+        })
+        .join("");
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    async function navigateMenu(menuId) {
+      if (appState.activeMenu === "emp-scan" && menuId !== "emp-scan") {
+        await stopCameraScanner();
+      }
+      appState.activeMenu = menuId;
+
+      const allSections = [
+        "sec-admin-dashboard",
+        "sec-admin-qr-generator",
+        "sec-admin-employees",
+        "sec-admin-attendance-logs",
+        "sec-admin-settings",
+        "sec-emp-home",
+        "sec-emp-scan",
+        "sec-emp-history",
+        "sec-emp-profile"
+      ];
+      allSections.forEach((secId) => {
+        const el = document.getElementById(secId);
+        if (el) el.classList.add("hidden");
+      });
+
+      const sectionMap = {
+        "dashboard": { id: "sec-admin-dashboard", title: "Dashboard" },
+        "qr-generator": { id: "sec-admin-qr-generator", title: "Layar & Generator QR" },
+        "employees": { id: "sec-admin-employees", title: "Data Karyawan" },
+        "attendance-logs": { id: "sec-admin-attendance-logs", title: "Rekap & Radius GPS" },
+        "settings": { id: "sec-admin-settings", title: "Pengaturan Jam & Lokasi" },
+        "emp-home": { id: "sec-emp-home", title: "Beranda Saya" },
+        "emp-scan": { id: "sec-emp-scan", title: "Scan QR Absen" },
+        "emp-history": { id: "sec-emp-history", title: "Riwayat & Izin" },
+        "emp-profile": { id: "sec-emp-profile", title: "Profil Karyawan" }
+      };
+
+      const target = sectionMap[menuId];
+      if (target) {
+        const secEl = document.getElementById(target.id);
+        if (secEl) secEl.classList.remove("hidden");
+        document.getElementById("page-header-title").textContent = target.title;
+      }
+
+      renderNavigation();
+      renderAllViews();
+    }
+
+    function handleFooterBannerAction() {
+      if (!appState.currentUser) return;
+      if (appState.currentUser.role === "admin") {
+        navigateMenu("qr-generator");
+      } else {
+        navigateMenu("emp-scan");
+      }
+    }
+
+    // =====================================================================
+    // RENDERING VIEWS & CHARTS
+    // =====================================================================
+    function getActiveQRSession() {
+      return (
+        appState.qr_sessions.find((s) => s.is_active) ||
+        appState.qr_sessions[0] ||
+        null
+      );
+    }
+
+    function getEmployeeById(empId) {
+      return appState.employees.find((e) => e.id === empId) || null;
+    }
+
+    function formatTimeShort(isoStr) {
+      if (!isoStr) return "--:--";
+      const d = new Date(isoStr);
+      if (isNaN(d.getTime())) {
+        return isoStr.slice(11, 16) || isoStr;
+      }
+      return d.toTimeString().slice(0, 5);
+    }
+
+    function calculateWorkDurationMinutes(checkInIso, checkOutIso) {
+      if (!checkInIso || !checkOutIso) return null;
+      const tIn = new Date(checkInIso);
+      const tOut = new Date(checkOutIso);
+      if (isNaN(tIn.getTime()) || isNaN(tOut.getTime())) return null;
+      const diffMs = tOut.getTime() - tIn.getTime();
+      if (diffMs <= 0) return 0;
+      return Math.round(diffMs / 60000);
+    }
+
+    function formatWorkDuration(checkInIso, checkOutIso, status = "") {
+      if (status === "Izin" || status === "Sakit") {
+        return { text: "0j 0m", detail: "Izin / Sakit", minutes: 0, decimalHours: "0.0" };
+      }
+      if (!checkInIso) {
+        return { text: "-", detail: "Belum Check-In", minutes: 0, decimalHours: "0.0" };
+      }
+      if (!checkOutIso) {
+        return { text: "Aktif", detail: "Belum Check-Out", minutes: 0, decimalHours: "0.0" };
+      }
+      const mins = calculateWorkDurationMinutes(checkInIso, checkOutIso);
+      if (mins === null) {
+        return { text: "-", detail: "-", minutes: 0, decimalHours: "0.0" };
+      }
+      const hours = Math.floor(mins / 60);
+      const remMins = mins % 60;
+      const dec = (mins / 60).toFixed(1);
+      return {
+        text: `${hours}j ${remMins}m`,
+        detail: `${dec} Jam (${hours} jam ${remMins} mnt)`,
+        minutes: mins,
+        decimalHours: dec
+      };
+    }
+
+    function resetAdminLogFilters() {
+      const fFrom = document.getElementById("filter-log-date");
+      const fTo = document.getElementById("filter-log-date-to");
+      const fStatus = document.getElementById("filter-log-status");
+      const fRadius = document.getElementById("filter-log-radius");
+      if (fFrom) fFrom.value = "";
+      if (fTo) fTo.value = "";
+      if (fStatus) fStatus.value = "ALL";
+      if (fRadius) fRadius.value = "ALL";
+      renderAdminLogsTable();
+      showToast("Filter rekap absensi telah direset.", "info");
+    }
+
+    function renderAllViews() {
+      // Update Global Company & Radius labels
+      const s = appState.settings;
+      document.getElementById("login-company-label").textContent = s.company_name;
+      document.getElementById("sidebar-radius-title").textContent = `Radius Kantor: ${s.max_radius_meters}m`;
+      document.getElementById("notif-badge-count").textContent = String(appState.attendance_logs.length);
+
+      recalculateGPSRadius();
+
+      if (!appState.currentUser) return;
+      if (appState.currentUser.role === "admin") {
+        renderAdminDashboard();
+        renderAdminQRGenerator();
+        renderAdminEmployees();
+        renderAdminLogsTable();
+        renderAdminSettingsForm();
+      } else {
+        renderEmployeeHome();
+        renderEmployeeScanSection();
+        renderEmployeeHistory();
+        renderEmployeeProfile();
+      }
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderAdminDashboard() {
+      const s = appState.settings;
+      const activeQR = getActiveQRSession();
+      document.getElementById("admin-hero-company").textContent = s.company_name;
+      document.getElementById("admin-hero-qr-code").textContent = activeQR ? activeQR.session_code : "BELUM ADA QR";
+      document.getElementById("admin-hero-radius-info").textContent = `Batas Radius: ${s.max_radius_meters}m`;
+
+      const todayLogs = appState.attendance_logs.filter((l) => l.attendance_date === TODAY_STR);
+      const presentCount = todayLogs.filter((l) => l.status === "Hadir").length;
+      const lateCount = todayLogs.filter((l) => l.status === "Terlambat").length;
+      const leaveCount = todayLogs.filter((l) => l.status === "Izin" || l.status === "Sakit").length;
+      const insideCount = appState.attendance_logs.filter((l) => l.is_within_radius !== false).length;
+      const insidePct = appState.attendance_logs.length
+        ? Math.round((insideCount / appState.attendance_logs.length) * 100)
+        : 100;
+
+      document.getElementById("kpi-admin-present").textContent = String(presentCount);
+      document.getElementById("kpi-admin-late").textContent = String(lateCount);
+      document.getElementById("kpi-admin-late-sub").textContent = `Toleransi ${s.late_tolerance_minutes} menit`;
+      document.getElementById("kpi-admin-leave").textContent = String(leaveCount);
+      document.getElementById("kpi-admin-total-emp").textContent = String(appState.employees.length);
+      document.getElementById("kpi-admin-radius-sub").textContent = `${insidePct}% dalam radius`;
+
+      // Render 3D Capsule Weekly Bar Chart (Matches Reference Image "Listening Overview")
+      const days = [
+        { label: "Mon", color: "#9B86F3", val: 75 },
+        { label: "Tue", color: "#F5A3B7", val: 88 },
+        { label: "Wed", color: "#FB9B50", val: 70 },
+        { label: "Thu", color: "#FCD364", val: 95 },
+        { label: "Fri", color: "#A3D98B", val: 68 },
+        { label: "Sat", color: "#78B7F2", val: 84 },
+        { label: "Sun", color: "#A689F5", val: Math.min(100, Math.max(45, todayLogs.length * 48)) }
+      ];
+      const barContainer = document.getElementById("admin-weekly-bars");
+      barContainer.innerHTML = days
+        .map(
+          (d) => `
+          <div class="flex-1 flex flex-col items-center gap-2 h-full justify-end">
+            <div class="w-full max-w-[30px] clay-bar-pill transition-all duration-500" style="height: ${d.val}%; background: ${d.color};"></div>
+            <span class="text-[11px] font-bold text-[#5E567A]">${d.label}</span>
+          </div>
+        `
+        )
+        .join("");
+
+      // Render Donut Chart (Matches Reference Image "Top Genres")
+      const totalLogs = appState.attendance_logs.length;
+      const cHadir = appState.attendance_logs.filter((l) => l.status === "Hadir").length;
+      const cLate = appState.attendance_logs.filter((l) => l.status === "Terlambat").length;
+      const cLeave = appState.attendance_logs.filter((l) => l.status === "Izin" || l.status === "Sakit").length;
+      const cOutRadius = appState.attendance_logs.filter((l) => l.is_within_radius === false).length;
+
+      const segments = [
+        { label: "Hadir Tepat", count: cHadir, color: "#9B86F3" },
+        { label: "Terlambat", count: cLate, color: "#F59EAC" },
+        { label: "Izin / Sakit", count: cLeave, color: "#FBD07C" },
+        { label: "Luar Radius", count: cOutRadius, color: "#78B7F2" }
+      ];
+
+      document.getElementById("admin-donut-total").textContent = String(totalLogs);
+      const denom = Math.max(1, cHadir + cLate + cLeave + cOutRadius);
+      let offset = 0;
+      const svgParts = [
+        `<circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#F3EEFC" stroke-width="6"></circle>`
+      ];
+      segments.forEach((seg) => {
+        const pct = Math.round((seg.count / denom) * 100);
+        if (pct > 0) {
+          svgParts.push(
+            `<circle cx="21" cy="21" r="15.915" fill="transparent" stroke="${seg.color}" stroke-width="6" stroke-dasharray="${pct} ${100 - pct}" stroke-dashoffset="${-offset}" stroke-linecap="round"></circle>`
+          );
+          offset += pct;
+        }
+      });
+      document.getElementById("admin-donut-svg").innerHTML = svgParts.join("");
+
+      document.getElementById("admin-donut-legend").innerHTML = segments
+        .map((seg) => {
+          const pct = totalLogs ? Math.round((seg.count / denom) * 100) : 0;
+          return `
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full" style="background:${seg.color}"></span>
+                <span class="font-bold text-[#2D264B]">${seg.label}</span>
+              </div>
+              <span class="font-extrabold text-[#5E567A]">${seg.count} (${pct}%)</span>
+            </div>
+          `;
+        })
+        .join("");
+
+      // Render Recent Logs List
+      const recentContainer = document.getElementById("admin-recent-logs-list");
+      const recentItems = appState.attendance_logs.slice(0, 4);
+      if (recentItems.length === 0) {
+        recentContainer.innerHTML = `<div class="p-6 text-center text-xs text-[#8C84A6] bg-[#FAF6F2] rounded-2xl">Belum ada data scan absensi.</div>`;
+      } else {
+        recentContainer.innerHTML = recentItems
+          .map((log) => {
+            const emp = getEmployeeById(log.employee_id) || { full_name: "Karyawan", division: "-" };
+            const distText = log.check_in_distance_m != null ? `${log.check_in_distance_m}m dari kantor` : "Tanpa GPS";
+            const radiusBadge = log.is_within_radius !== false
+              ? `<span class="text-emerald-700 font-extrabold">${distText}</span>`
+              : `<span class="text-rose-600 font-extrabold">${distText} (Luar)</span>`;
+            return `
+              <div class="p-3.5 rounded-2xl bg-[#FAF6F2] border border-purple-100/80 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl bg-[#EFE6FA] text-[#6247C7] font-display font-black text-base flex items-center justify-center shrink-0">
+                    ${emp.full_name.charAt(0)}
+                  </div>
+                  <div>
+                    <div class="font-extrabold text-xs sm:text-sm text-[#2D264B]">${emp.full_name}</div>
+                    <div class="text-[11px] text-[#8C84A6]">
+                      Masuk: <strong>${formatTimeShort(log.check_in_time)}</strong> • Pulang: <strong>${formatTimeShort(log.check_out_time)}</strong> • ${radiusBadge}
+                    </div>
+                  </div>
+                </div>
+                <span class="px-3 py-1 rounded-full text-[11px] font-extrabold ${
+                  log.status === "Hadir"
+                    ? "bg-emerald-100 text-emerald-700"
+                    : log.status === "Terlambat"
+                    ? "bg-amber-100 text-amber-800"
+                    : "bg-purple-100 text-purple-800"
+                }">${log.status}</span>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      // Update Office Radar Card
+      document.getElementById("card-office-name").textContent = s.company_name;
+      document.getElementById("card-office-coords").textContent = `${Number(s.office_lat).toFixed(6)}, ${Number(s.office_lng).toFixed(6)}`;
+      document.getElementById("card-office-radius").textContent = `${s.max_radius_meters} Meter`;
+    }
+
+    function renderAdminQRGenerator() {
+      const s = appState.settings;
+      const activeQR = getActiveQRSession();
+      document.getElementById("qr-display-company").textContent = s.company_name;
+
+      const dateInput = document.getElementById("qr-input-date");
+      if (dateInput && !dateInput.value) dateInput.value = TODAY_STR;
+
+      const box = document.getElementById("qrcode-canvas-box");
+      box.innerHTML = "";
+
+      if (activeQR) {
+        document.getElementById("qr-display-token-text").textContent = activeQR.session_code;
+        document.getElementById("qr-display-date").textContent = activeQR.session_date;
+        document.getElementById("qr-display-type").textContent =
+          activeQR.qr_type === "ALL"
+            ? "Masuk & Pulang (ALL)"
+            : activeQR.qr_type === "CHECK_IN"
+            ? "Khusus Check-In"
+            : "Khusus Check-Out";
+
+        if (window.QRCode) {
+          new window.QRCode(box, {
+            text: activeQR.session_code,
+            width: 200,
+            height: 200,
+            colorDark: "#2D264B",
+            colorLight: "#FFFFFF",
+            correctLevel: window.QRCode.CorrectLevel.H
+          });
+        } else {
+          box.innerHTML = `<div class="p-4 text-xs font-mono font-bold text-[#2D264B]">${activeQR.session_code}</div>`;
+        }
+      } else {
+        document.getElementById("qr-display-token-text").textContent = "BELUM ADA TOKEN";
+        box.innerHTML = `<div class="text-xs text-[#8C84A6]">Silakan buat sesi QR baru.</div>`;
+      }
+
+      const listEl = document.getElementById("qr-sessions-list");
+      if (appState.qr_sessions.length === 0) {
+        listEl.innerHTML = `<div class="p-4 text-center text-xs text-[#8C84A6] bg-[#FAF6F2] rounded-2xl">Belum ada data sesi QR.</div>`;
+      } else {
+        listEl.innerHTML = appState.qr_sessions
+          .map(
+            (q) => `
+            <div class="p-3.5 rounded-2xl bg-[#FAF6F2] border border-purple-100 flex items-center justify-between gap-2">
+              <div>
+                <div class="font-mono font-extrabold text-xs text-[#2D264B]">${q.session_code}</div>
+                <div class="text-[11px] text-[#8C84A6]">${q.session_date} • Tipe: ${q.qr_type}</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="setActiveQRSession('${q.id}')" class="px-3 py-1 rounded-full text-[11px] font-extrabold ${
+                  q.is_active
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "bg-purple-100 text-[#6247C7]"
+                }">
+                  ${q.is_active ? "Aktif" : "Gunakan"}
+                </button>
+                <button type="button" onclick="deleteQRSession('${q.id}')" class="p-1.5 rounded-full bg-rose-50 text-rose-600 hover:bg-rose-100">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          `
+          )
+          .join("");
+      }
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderAdminEmployees() {
+      const container = document.getElementById("employees-grid-list");
+      const q = (appState.searchQuery || "").toLowerCase();
+      const filtered = appState.employees.filter(
+        (e) =>
+          !q ||
+          e.full_name.toLowerCase().includes(q) ||
+          e.nik.toLowerCase().includes(q) ||
+          (e.division || "").toLowerCase().includes(q)
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="col-span-2 clay-card p-8 text-center text-xs text-[#8C84A6]">Belum ada data karyawan yang sesuai.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered
+        .map(
+          (emp) => `
+          <div class="clay-card p-5 flex items-start justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="w-12 h-12 rounded-2xl text-white font-display font-black text-lg flex items-center justify-center shrink-0 shadow-md" style="background:${emp.avatar_color || "#8A70E8"}">
+                ${emp.full_name.charAt(0)}
+              </div>
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <h4 class="font-display font-extrabold text-sm text-[#2D264B]">${emp.full_name}</h4>
+                  <span class="px-2 py-0.5 rounded-full bg-[#EFE6FA] text-[#6247C7] font-mono text-[10px] font-extrabold">${emp.nik}</span>
+                </div>
+                <p class="text-xs text-[#5E567A] font-semibold">${emp.position} • ${emp.division}</p>
+                <div class="text-[11px] text-[#8C84A6] font-mono">
+                  Login HP: <strong>${emp.username}</strong> | Pass: <strong>${emp.password}</strong>
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" onclick="openEmployeeModal('${emp.id}')" class="p-2 rounded-xl bg-[#F3EEFC] text-[#6247C7] hover:bg-purple-200 transition" title="Edit">
+                <i data-lucide="pencil" class="w-4 h-4"></i>
+              </button>
+              <button type="button" onclick="confirmDeleteEmployee('${emp.id}')" class="p-2 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100 transition" title="Hapus">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        `
+        )
+        .join("");
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function getFilteredAdminLogs() {
+      const dateFrom = document.getElementById("filter-log-date")?.value || "";
+      const dateTo = document.getElementById("filter-log-date-to")?.value || "";
+      const statusFilter = document.getElementById("filter-log-status")?.value || "ALL";
+      const radiusFilter = document.getElementById("filter-log-radius")?.value || "ALL";
+      const q = (appState.searchQuery || "").toLowerCase();
+
+      return appState.attendance_logs.filter((log) => {
+        const emp = getEmployeeById(log.employee_id);
+        const matchFrom = !dateFrom || log.attendance_date >= dateFrom;
+        const matchTo = !dateTo || log.attendance_date <= dateTo;
+        const matchStatus = statusFilter === "ALL" || log.status === statusFilter;
+        const matchRadius =
+          radiusFilter === "ALL" ||
+          (radiusFilter === "INSIDE" && log.is_within_radius !== false) ||
+          (radiusFilter === "OUTSIDE" && log.is_within_radius === false);
+        const matchSearch =
+          !q ||
+          (emp &&
+            (emp.full_name.toLowerCase().includes(q) ||
+              emp.nik.toLowerCase().includes(q) ||
+              (emp.division || "").toLowerCase().includes(q)));
+        return matchFrom && matchTo && matchStatus && matchRadius && matchSearch;
+      });
+    }
+
+    function renderAdminLogsTable() {
+      const tbody = document.getElementById("admin-logs-tbody");
+      const dateFrom = document.getElementById("filter-log-date")?.value || "";
+      const dateTo = document.getElementById("filter-log-date-to")?.value || "";
+      const filtered = getFilteredAdminLogs();
+
+      // Hitung Akumulasi Jumlah Jam Kerja dari data terfilter
+      let totalMinutes = 0;
+      let completedSessions = 0;
+      filtered.forEach((log) => {
+        const dur = formatWorkDuration(log.check_in_time, log.check_out_time, log.status);
+        if (dur.minutes > 0) {
+          totalMinutes += dur.minutes;
+          completedSessions += 1;
+        }
+      });
+
+      const totalH = Math.floor(totalMinutes / 60);
+      const totalM = totalMinutes % 60;
+      const avgHours = completedSessions > 0 ? (totalMinutes / 60 / completedSessions).toFixed(1) : "0.0";
+
+      const elTotalHours = document.getElementById("rekap-summary-total-hours");
+      const elAvgHours = document.getElementById("rekap-summary-avg-hours");
+      const elPeriod = document.getElementById("rekap-summary-period");
+
+      if (elTotalHours) {
+        elTotalHours.textContent = `${totalH} Jam ${totalM} Menit (${(totalMinutes / 60).toFixed(1)}j)`;
+      }
+      if (elAvgHours) {
+        elAvgHours.textContent = `${avgHours} Jam / Hari (${completedSessions} selesai)`;
+      }
+      if (elPeriod) {
+        const rangeLabel =
+          dateFrom && dateTo
+            ? `${dateFrom} s.d. ${dateTo}`
+            : dateFrom
+            ? `Mulai ${dateFrom}`
+            : dateTo
+            ? `S.d. ${dateTo}`
+            : "Semua Tanggal";
+        elPeriod.textContent = `${rangeLabel} (${filtered.length} Log)`;
+      }
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-xs text-[#8C84A6]">Belum ada data log absensi pada rentang tanggal / filter ini.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered
+        .map((log) => {
+          const emp = getEmployeeById(log.employee_id) || {
+            full_name: "Karyawan",
+            nik: "-",
+            division: "-"
+          };
+          const distIn = log.check_in_distance_m != null ? `${log.check_in_distance_m}m` : "-";
+          const distOut = log.check_out_distance_m != null ? `${log.check_out_distance_m}m` : "-";
+          const dur = formatWorkDuration(log.check_in_time, log.check_out_time, log.status);
+          const mapUrl =
+            log.check_in_lat && log.check_in_lng
+              ? `https://www.google.com/maps?q=${log.check_in_lat},${log.check_in_lng}`
+              : null;
+
+          return `
+            <tr class="hover:bg-[#FAF6F2] transition">
+              <td class="py-3.5 px-4">
+                <div class="font-extrabold text-[#2D264B]">${emp.full_name}</div>
+                <div class="text-[11px] text-[#8C84A6]">${emp.nik} • ${emp.division}</div>
+              </td>
+              <td class="py-3.5 px-4 font-semibold text-[#5E567A]">${log.attendance_date}</td>
+              <td class="py-3.5 px-4 font-bold text-emerald-700">${formatTimeShort(log.check_in_time)}</td>
+              <td class="py-3.5 px-4 font-bold text-[#6247C7]">${formatTimeShort(log.check_out_time)}</td>
+              <td class="py-3.5 px-4">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold ${
+                  dur.minutes > 0
+                    ? "bg-[#EFE6FA] text-[#4A3B8C]"
+                    : "bg-amber-50 text-amber-700"
+                }">
+                  <i data-lucide="hourglass" class="w-3 h-3"></i>
+                  <span>${dur.text}</span>
+                </span>
+                <div class="text-[10px] text-[#8C84A6] mt-0.5">${dur.detail}</div>
+              </td>
+              <td class="py-3.5 px-4">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold ${
+                    log.is_within_radius !== false
+                      ? "bg-emerald-100 text-emerald-800"
+                      : "bg-rose-100 text-rose-700"
+                  }">
+                    In: ${distIn} | Out: ${distOut}
+                  </span>
+                  ${
+                    mapUrl
+                      ? `<a href="${mapUrl}" target="_blank" rel="noopener noreferrer" class="text-[#8A70E8] hover:underline font-bold text-[11px]">Peta ↗</a>`
+                      : ""
+                  }
+                </div>
+              </td>
+              <td class="py-3.5 px-4">
+                <span class="px-3 py-1 rounded-full text-[11px] font-extrabold ${
+                  log.status === "Hadir"
+                    ? "bg-emerald-100 text-emerald-700"
+                    : log.status === "Terlambat"
+                    ? "bg-amber-100 text-amber-800"
+                    : "bg-purple-100 text-purple-800"
+                }">${log.status}</span>
+              </td>
+              <td class="py-3.5 px-4 text-right">
+                <button type="button" onclick="deleteAttendanceLog('${log.id}')" class="p-1.5 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100" title="Hapus Log">
+                  <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        })
+        .join("");
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderAdminSettingsForm() {
+      const s = appState.settings;
+      document.getElementById("set-company-name").value = s.company_name || "";
+      document.getElementById("set-work-start").value = s.work_start_time || "08:00";
+      document.getElementById("set-late-tolerance").value = s.late_tolerance_minutes ?? 15;
+      document.getElementById("set-work-end").value = s.work_end_time || "17:00";
+      document.getElementById("set-office-lat").value = s.office_lat ?? -6.9175;
+      document.getElementById("set-office-lng").value = s.office_lng ?? 107.6191;
+      document.getElementById("set-max-radius").value = s.max_radius_meters ?? 100;
+      document.getElementById("set-enforce-geofence").checked = s.enforce_geofence !== false;
+    }
+
+    // =====================================================================
+    // EMPLOYEE VIEWS RENDERING (MOBILE-FIRST EXPERIENCE)
+    // =====================================================================
+    function renderEmployeeHome() {
+      const emp = appState.currentUser?.data;
+      if (!emp) return;
+
+      const firstName = emp.full_name.split(" ")[0];
+      document.getElementById("emp-hero-greeting").textContent = `Selamat Pagi, ${firstName}! ☀️`;
+
+      const myLogs = appState.attendance_logs.filter((l) => l.employee_id === emp.id);
+      const todayLog = myLogs.find((l) => l.attendance_date === TODAY_STR);
+
+      document.getElementById("emp-today-in").textContent = todayLog ? formatTimeShort(todayLog.check_in_time) : "--:--";
+      document.getElementById("emp-today-out").textContent = todayLog ? formatTimeShort(todayLog.check_out_time) : "--:--";
+
+      const statusPill = document.getElementById("emp-hero-status-pill");
+      if (!todayLog) {
+        statusPill.textContent = "Status Hari Ini: Belum Check-In";
+      } else if (todayLog && !todayLog.check_out_time) {
+        statusPill.textContent = `Sudah Check-In (${formatTimeShort(todayLog.check_in_time)}) • Belum Check-Out`;
+      } else {
+        statusPill.textContent = "Absensi Hari Ini Selesai (Masuk & Pulang)";
+      }
+
+      const presentCount = myLogs.filter((l) => l.status === "Hadir").length;
+      const lateCount = myLogs.filter((l) => l.status === "Terlambat").length;
+      document.getElementById("emp-kpi-present").textContent = String(presentCount);
+      document.getElementById("emp-kpi-late").textContent = String(lateCount);
+      document.getElementById("emp-kpi-streak").textContent = String(Math.max(1, presentCount));
+
+      const recentEl = document.getElementById("emp-home-recent-list");
+      if (myLogs.length === 0) {
+        recentEl.innerHTML = `<div class="p-6 text-center text-xs text-[#8C84A6] bg-[#FAF6F2] rounded-2xl">Belum ada catatan absensi. Silakan scan QR Code kantor.</div>`;
+      } else {
+        recentEl.innerHTML = myLogs
+          .slice(0, 5)
+          .map(
+            (l) => `
+            <div class="p-3.5 rounded-2xl bg-[#FAF6F2] border border-purple-100 flex items-center justify-between gap-3">
+              <div>
+                <div class="font-extrabold text-xs sm:text-sm text-[#2D264B]">${l.attendance_date}</div>
+                <div class="text-[11px] text-[#8C84A6]">
+                  Masuk: <strong>${formatTimeShort(l.check_in_time)}</strong> • Pulang: <strong>${formatTimeShort(l.check_out_time)}</strong> • Jarak: <strong>${l.check_in_distance_m ?? 0}m</strong>
+                </div>
+              </div>
+              <span class="px-3 py-1 rounded-full text-[11px] font-extrabold ${
+                l.status === "Hadir"
+                  ? "bg-emerald-100 text-emerald-700"
+                  : l.status === "Terlambat"
+                  ? "bg-amber-100 text-amber-800"
+                  : "bg-purple-100 text-purple-800"
+              }">${l.status}</span>
+            </div>
+          `
+          )
+          .join("");
+      }
+    }
+
+    function renderEmployeeScanSection() {
+      const activeQR = getActiveQRSession();
+      const inputEl = document.getElementById("manual-qr-code-input");
+      if (inputEl && IS_PREVIEW && activeQR && !inputEl.value) {
+        inputEl.value = activeQR.session_code;
+      }
+      const simBox = document.getElementById("scan-gps-simulator-box");
+      if (simBox) {
+        if (IS_PREVIEW) simBox.classList.remove("hidden");
+        else simBox.classList.add("hidden");
+      }
+    }
+
+    function renderEmployeeHistory() {
+      const emp = appState.currentUser?.data;
+      if (!emp) return;
+      const leaveDate = document.getElementById("leave-date");
+      if (leaveDate && !leaveDate.value) leaveDate.value = TODAY_STR;
+
+      const myLogs = appState.attendance_logs.filter((l) => l.employee_id === emp.id);
+      const listEl = document.getElementById("emp-full-history-list");
+      if (myLogs.length === 0) {
+        listEl.innerHTML = `<div class="p-6 text-center text-xs text-[#8C84A6] bg-[#FAF6F2] rounded-2xl">Belum ada riwayat absensi.</div>`;
+        return;
+      }
+      listEl.innerHTML = myLogs
+        .map(
+          (l) => `
+          <div class="p-4 rounded-2xl bg-[#FAF6F2] border border-purple-100 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div class="font-extrabold text-xs sm:text-sm text-[#2D264B]">${l.attendance_date}</div>
+              <div class="text-[11px] text-[#5E567A]">
+                Check-In: <strong>${formatTimeShort(l.check_in_time)}</strong> | Check-Out: <strong>${formatTimeShort(l.check_out_time)}</strong> | Jam Kerja: <strong class="text-[#6247C7]">${formatWorkDuration(l.check_in_time, l.check_out_time, l.status).text}</strong>
+              </div>
+              <div class="text-[11px] text-[#8C84A6]">
+                Radius GPS: <strong>${l.check_in_distance_m ?? 0} meter dari kantor</strong> • ${l.notes || ""}
+              </div>
+            </div>
+            <span class="px-3 py-1 rounded-full text-[11px] font-extrabold ${
+              l.status === "Hadir"
+                ? "bg-emerald-100 text-emerald-700"
+                : l.status === "Terlambat"
+                ? "bg-amber-100 text-amber-800"
+                : "bg-purple-100 text-purple-800"
+            }">${l.status}</span>
+          </div>
+        `
+        )
+        .join("");
+    }
+
+    function renderEmployeeProfile() {
+      const emp = appState.currentUser?.data;
+      if (!emp) return;
+      document.getElementById("profile-avatar-big").textContent = emp.full_name.charAt(0).toUpperCase();
+      document.getElementById("profile-name-big").textContent = emp.full_name;
+      document.getElementById("profile-position-big").textContent = `${emp.position} • ${emp.division}`;
+      document.getElementById("profile-nik").textContent = emp.nik;
+      document.getElementById("profile-username").textContent = emp.username;
+      document.getElementById("profile-division").textContent = emp.division;
+    }
+
+    // =====================================================================
+    // QR CODE SCANNING & GPS GEOFENCE VALIDATION LOGIC
+    // =====================================================================
+    function setScanAttendanceMode(mode) {
+      appState.scanMode = mode;
+      const btnIn = document.getElementById("btn-mode-checkin");
+      const btnOut = document.getElementById("btn-mode-checkout");
+      if (mode === "CHECK_IN") {
+        btnIn.className = "py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold clay-nav-active flex items-center justify-center gap-2";
+        btnOut.className = "py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-[#5E567A] flex items-center justify-center gap-2";
+      } else {
+        btnOut.className = "py-3 px-4 rounded-xl text-xs sm:text-sm font-extrabold clay-nav-active flex items-center justify-center gap-2";
+        btnIn.className = "py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-[#5E567A] flex items-center justify-center gap-2";
+      }
+    }
+
+    async function startCameraScanner() {
+      if (appState.cameraRunning) return;
+      if (!window.Html5Qrcode) {
+        showToast("Library kamera QR belum termuat, gunakan input token di bawah.", "warning");
+        return;
+      }
+      try {
+        document.getElementById("qr-camera-placeholder").classList.add("hidden");
+        document.getElementById("btn-start-camera").classList.add("hidden");
+        document.getElementById("btn-stop-camera").classList.remove("hidden");
+
+        appState.html5QrScanner = new window.Html5Qrcode("qr-reader-viewport");
+        appState.cameraRunning = true;
+
+        await appState.html5QrScanner.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 220, height: 220 } },
+          async (decodedText) => {
+            await stopCameraScanner();
+            await processQRCodeScan(decodedText);
+          },
+          () => {}
+        );
+      } catch (err) {
+        appState.cameraRunning = false;
+        document.getElementById("qr-camera-placeholder").classList.remove("hidden");
+        document.getElementById("btn-start-camera").classList.remove("hidden");
+        document.getElementById("btn-stop-camera").classList.add("hidden");
+        showToast("Kamera tidak dapat diakses di perangkat ini. Silakan gunakan tombol Kirim Scan QR di bawah.", "warning");
+      }
+    }
+
+    async function stopCameraScanner() {
+      if (appState.html5QrScanner && appState.cameraRunning) {
+        try {
+          await appState.html5QrScanner.stop();
+          await appState.html5QrScanner.clear();
+        } catch (_) {}
+      }
+      appState.cameraRunning = false;
+      const ph = document.getElementById("qr-camera-placeholder");
+      const btnStart = document.getElementById("btn-start-camera");
+      const btnStop = document.getElementById("btn-stop-camera");
+      if (ph) ph.classList.remove("hidden");
+      if (btnStart) btnStart.classList.remove("hidden");
+      if (btnStop) btnStop.classList.add("hidden");
+    }
+
+    async function submitManualTokenScan() {
+      const code = document.getElementById("manual-qr-code-input").value.trim();
+      if (!code) {
+        showToast("Masukkan kode token QR terlebih dahulu.", "warning");
+        return;
+      }
+      await processQRCodeScan(code);
+    }
+
+    function determineAttendanceStatus(nowDate) {
+      const s = appState.settings;
+      const [startH, startM] = (s.work_start_time || "08:00").split(":").map(Number);
+      const tolerance = Number(s.late_tolerance_minutes || 15);
+      const limitMinutes = startH * 60 + startM + tolerance;
+      const currentMinutes = nowDate.getHours() * 60 + nowDate.getMinutes();
+      return currentMinutes <= limitMinutes ? "Hadir" : "Terlambat";
+    }
+
+    async function processQRCodeScan(scannedToken) {
+      const emp = appState.currentUser?.data;
+      if (!emp) return;
+
+      recalculateGPSRadius();
+      const s = appState.settings;
+      const dist = appState.gps.distance_m;
+      const withinRadius = appState.gps.is_within_radius;
+
+      // 1. Check GPS Radius Geofence
+      if (s.enforce_geofence && !withinRadius) {
+        showToast(
+          `Scan Ditolak! Posisi HP Anda (${dist}m) berada di luar batas radius kantor (${s.max_radius_meters}m).`,
+          "error"
+        );
+        return;
+      }
+
+      // 2. Validate QR Session Token
+      const validSession = appState.qr_sessions.find(
+        (q) => q.session_code.toLowerCase() === scannedToken.toLowerCase() && q.is_active
+      );
+      if (!validSession) {
+        showToast(`Kode QR "${scannedToken}" tidak valid atau sudah tidak aktif.`, "error");
+        return;
+      }
+
+      if (
+        validSession.qr_type !== "ALL" &&
+        validSession.qr_type !== appState.scanMode
+      ) {
+        showToast(`Kode QR ini khusus untuk ${validSession.qr_type}.`, "warning");
+        return;
+      }
+
+      const now = new Date();
+      const nowIso = now.toISOString();
+      const existingLog = appState.attendance_logs.find(
+        (l) => l.employee_id === emp.id && l.attendance_date === TODAY_STR
+      );
+
+      if (appState.scanMode === "CHECK_IN") {
+        if (existingLog && existingLog.check_in_time) {
+          showToast(`Anda sudah melakukan Check-In hari ini pada pukul ${formatTimeShort(existingLog.check_in_time)}.`, "warning");
+          return;
+        }
+        const status = determineAttendanceStatus(now);
+        const newLog = {
+          id: "log-" + Date.now(),
+          employee_id: emp.id,
+          attendance_date: TODAY_STR,
+          check_in_time: nowIso,
+          check_out_time: null,
+          status,
+          notes: `Scan QR Masuk (${dist}m dari kantor)`,
+          qr_code_used: validSession.session_code,
+          check_in_lat: appState.gps.lat,
+          check_in_lng: appState.gps.lng,
+          check_in_distance_m: dist,
+          check_out_lat: null,
+          check_out_lng: null,
+          check_out_distance_m: null,
+          is_within_radius: withinRadius
+        };
+
+        if (!IS_PREVIEW && supabase) {
+          try {
+            const { data, error } = await supabase
+              .from("attendance_logs")
+              .insert([{
+                employee_id: newLog.employee_id,
+                attendance_date: newLog.attendance_date,
+                check_in_time: newLog.check_in_time,
+                status: newLog.status,
+                notes: newLog.notes,
+                qr_code_used: newLog.qr_code_used,
+                check_in_lat: newLog.check_in_lat,
+                check_in_lng: newLog.check_in_lng,
+                check_in_distance_m: newLog.check_in_distance_m,
+                is_within_radius: newLog.is_within_radius
+              }])
+              .select()
+              .single();
+            if (error) throw error;
+            appState.attendance_logs.unshift(data);
+          } catch (err) {
+            showToast("Gagal menyimpan Check-In ke Supabase: " + err.message, "error");
+            return;
+          }
+        } else {
+          appState.attendance_logs.unshift(newLog);
+        }
+
+        renderAllViews();
+        showToast(`Check-In Berhasil (${status})! Jarak lokasi Anda: ${dist}m dari kantor.`, "success");
+      } else {
+        // CHECK_OUT
+        if (!existingLog) {
+          showToast("Anda belum melakukan Check-In hari ini. Silakan pilih Absen Masuk terlebih dahulu.", "warning");
+          return;
+        }
+        existingLog.check_out_time = nowIso;
+        existingLog.check_out_lat = appState.gps.lat;
+        existingLog.check_out_lng = appState.gps.lng;
+        existingLog.check_out_distance_m = dist;
+        existingLog.notes = `${existingLog.notes || ""} | Pulang (${dist}m)`;
+
+        if (!IS_PREVIEW && supabase) {
+          try {
+            const { error } = await supabase
+              .from("attendance_logs")
+              .update({
+                check_out_time: existingLog.check_out_time,
+                check_out_lat: existingLog.check_out_lat,
+                check_out_lng: existingLog.check_out_lng,
+                check_out_distance_m: existingLog.check_out_distance_m,
+                notes: existingLog.notes
+              })
+              .eq("id", existingLog.id);
+            if (error) throw error;
+          } catch (err) {
+            showToast("Gagal menyimpan Check-Out ke Supabase: " + err.message, "error");
+            return;
+          }
+        }
+
+        renderAllViews();
+        showToast(`Check-Out Pulang Berhasil! Jarak lokasi Anda: ${dist}m dari kantor.`, "success");
+      }
+    }
+
+    // =====================================================================
+    // ADMIN CRUD OPERATIONS (QR, EMPLOYEES, LOGS, SETTINGS)
+    // =====================================================================
+    async function regenerateActiveQR() {
+      const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+      const newCode = `QR-${TODAY_STR.replace(/-/g, "")}-${randomSuffix}`;
+      await createNewQRSessionRecord(newCode, TODAY_STR, "ALL");
+    }
+
+    async function handleCreateQRSession(e) {
+      e.preventDefault();
+      const code = document.getElementById("qr-input-code").value.trim().toUpperCase();
+      const date = document.getElementById("qr-input-date").value || TODAY_STR;
+      const type = document.getElementById("qr-input-type").value;
+      await createNewQRSessionRecord(code, date, type);
+      document.getElementById("qr-input-code").value = "";
+    }
+
+    async function createNewQRSessionRecord(code, date, type) {
+      appState.qr_sessions.forEach((s) => (s.is_active = false));
+      const newRec = {
+        id: "qr-" + Date.now(),
+        session_code: code,
+        session_date: date,
+        qr_type: type,
+        is_active: true
+      };
+
+      if (!IS_PREVIEW && supabase) {
+        try {
+          await supabase.from("qr_sessions").update({ is_active: false }).neq("id", "00000000-0000-0000-0000-000000000000");
+          const { data, error } = await supabase
+            .from("qr_sessions")
+            .insert([{ session_code: code, session_date: date, qr_type: type, is_active: true }])
+            .select()
+            .single();
+          if (error) throw error;
+          appState.qr_sessions.unshift(data);
+        } catch (err) {
+          showToast("Gagal membuat QR di Supabase: " + err.message, "error");
+          return;
+        }
+      } else {
+        appState.qr_sessions.unshift(newRec);
+      }
+
+      renderAllViews();
+      showToast(`Token QR baru (${code}) berhasil diaktifkan!`, "success");
+    }
+
+    async function setActiveQRSession(id) {
+      appState.qr_sessions.forEach((q) => {
+        q.is_active = q.id === id;
+      });
+      if (!IS_PREVIEW && supabase) {
+        try {
+          await supabase.from("qr_sessions").update({ is_active: false }).neq("id", id);
+          await supabase.from("qr_sessions").update({ is_active: true }).eq("id", id);
+        } catch (err) {
+          showToast("Gagal mengubah status QR: " + err.message, "error");
+        }
+      }
+      renderAllViews();
+      showToast("Sesi QR aktif berhasil diperbarui.", "success");
+    }
+
+    async function deleteQRSession(id) {
+      openConfirmModal("Hapus Sesi QR?", "Token QR ini tidak akan bisa digunakan lagi oleh karyawan.", async () => {
+        if (!IS_PREVIEW && supabase) {
+          try {
+            const { error } = await supabase.from("qr_sessions").delete().eq("id", id);
+            if (error) throw error;
+          } catch (err) {
+            showToast("Gagal menghapus QR: " + err.message, "error");
+            return;
+          }
+        }
+        appState.qr_sessions = appState.qr_sessions.filter((q) => q.id !== id);
+        renderAllViews();
+        showToast("Sesi QR dihapus.", "info");
+      });
+    }
+
+    function copyActiveQRToken() {
+      const activeQR = getActiveQRSession();
+      if (!activeQR) return;
+      const text = activeQR.session_code;
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        showToast(`Kode token "${text}" berhasil disalin!`, "success");
+      } catch (_) {
+        showToast(`Kode token: ${text}`, "info");
+      }
+    }
+
+    function openEmployeeModal(empId = "") {
+      const modal = document.getElementById("modal-employee");
+      const title = document.getElementById("modal-employee-title");
+      document.getElementById("emp-crud-id").value = empId;
+
+      if (empId) {
+        const emp = getEmployeeById(empId);
+        if (!emp) return;
+        title.textContent = "Edit Data Karyawan";
+        document.getElementById("emp-crud-nik").value = emp.nik;
+        document.getElementById("emp-crud-username").value = emp.username;
+        document.getElementById("emp-crud-name").value = emp.full_name;
+        document.getElementById("emp-crud-division").value = emp.division;
+        document.getElementById("emp-crud-position").value = emp.position;
+        document.getElementById("emp-crud-password").value = emp.password;
+      } else {
+        title.textContent = "Tambah Karyawan Baru";
+        document.getElementById("form-employee-crud").reset();
+      }
+      modal.classList.remove("hidden");
+    }
+
+    function closeEmployeeModal() {
+      document.getElementById("modal-employee").classList.add("hidden");
+    }
+
+    async function handleSaveEmployee(e) {
+      e.preventDefault();
+      const id = document.getElementById("emp-crud-id").value;
+      const payload = {
+        nik: document.getElementById("emp-crud-nik").value.trim().toUpperCase(),
+        username: document.getElementById("emp-crud-username").value.trim().toLowerCase(),
+        full_name: document.getElementById("emp-crud-name").value.trim(),
+        division: document.getElementById("emp-crud-division").value.trim(),
+        position: document.getElementById("emp-crud-position").value.trim(),
+        password: document.getElementById("emp-crud-password").value,
+        avatar_color: "#8A70E8",
+        is_active: true
+      };
+
+      if (id) {
+        if (!IS_PREVIEW && supabase) {
+          try {
+            const { error } = await supabase.from("employees").update(payload).eq("id", id);
+            if (error) throw error;
+          } catch (err) {
+            showToast("Gagal memperbarui karyawan: " + err.message, "error");
+            return;
+          }
+        }
+        const idx = appState.employees.findIndex((x) => x.id === id);
+        if (idx !== -1) appState.employees[idx] = { ...appState.employees[idx], ...payload };
+        showToast("Data karyawan berhasil diperbarui.", "success");
+      } else {
+        if (!IS_PREVIEW && supabase) {
+          try {
+            const { data, error } = await supabase.from("employees").insert([payload]).select().single();
+            if (error) throw error;
+            appState.employees.push(data);
+          } catch (err) {
+            showToast("Gagal menambah karyawan: " + err.message, "error");
+            return;
+          }
+        } else {
+          appState.employees.push({ id: "emp-" + Date.now(), ...payload });
+        }
+        showToast("Karyawan baru berhasil ditambahkan!", "success");
+      }
+
+      closeEmployeeModal();
+      renderAllViews();
+    }
+
+    function confirmDeleteEmployee(empId) {
+      openConfirmModal("Hapus Data Karyawan?", "Seluruh akses login karyawan ini akan dihapus.", async () => {
+        if (!IS_PREVIEW && supabase) {
+          try {
+            const { error } = await supabase.from("employees").delete().eq("id", empId);
+            if (error) throw error;
+          } catch (err) {
+            showToast("Gagal menghapus karyawan: " + err.message, "error");
+            return;
+          }
+        }
+        appState.employees = appState.employees.filter((e) => e.id !== empId);
+        renderAllViews();
+        showToast("Data karyawan telah dihapus.", "info");
+      });
+    }
+
+    function openManualAttendanceModal() {
+      const select = document.getElementById("man-emp-id");
+      select.innerHTML = appState.employees
+        .map((e) => `<option value="${e.id}">${e.full_name} (${e.nik})</option>`)
+        .join("");
+      document.getElementById("man-date").value = TODAY_STR;
+      document.getElementById("modal-manual-attendance").classList.remove("hidden");
+    }
+
+    function closeManualAttendanceModal() {
+      document.getElementById("modal-manual-attendance").classList.add("hidden");
+    }
+
+    async function handleSaveManualAttendance(e) {
+      e.preventDefault();
+      const empId = document.getElementById("man-emp-id").value;
+      const date = document.getElementById("man-date").value;
+      const status = document.getElementById("man-status").value;
+      const tIn = document.getElementById("man-check-in").value;
+      const tOut = document.getElementById("man-check-out").value;
+      const notes = document.getElementById("man-notes").value.trim() || "Input Manual Admin";
+
+      const newLog = {
+        id: "log-" + Date.now(),
+        employee_id: empId,
+        attendance_date: date,
+        check_in_time: tIn ? `${date}T${tIn}:00` : null,
+        check_out_time: tOut ? `${date}T${tOut}:00` : null,
+        status,
+        notes,
+        qr_code_used: "MANUAL-ADMIN",
+        check_in_lat: appState.settings.office_lat,
+        check_in_lng: appState.settings.office_lng,
+        check_in_distance_m: 0,
+        check_out_lat: appState.settings.office_lat,
+        check_out_lng: appState.settings.office_lng,
+        check_out_distance_m: 0,
+        is_within_radius: true
+      };
+
+      if (!IS_PREVIEW && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from("attendance_logs")
+            .insert([{
+              employee_id: newLog.employee_id,
+              attendance_date: newLog.attendance_date,
+              check_in_time: newLog.check_in_time,
+              check_out_time: newLog.check_out_time,
+              status: newLog.status,
+              notes: newLog.notes,
+              qr_code_used: newLog.qr_code_used,
+              check_in_lat: newLog.check_in_lat,
+              check_in_lng: newLog.check_in_lng,
+              check_in_distance_m: newLog.check_in_distance_m,
+              check_out_lat: newLog.check_out_lat,
+              check_out_lng: newLog.check_out_lng,
+              check_out_distance_m: newLog.check_out_distance_m,
+              is_within_radius: true
+            }])
+            .select()
+            .single();
+          if (error) throw error;
+          appState.attendance_logs.unshift(data);
+        } catch (err) {
+          showToast("Gagal menyimpan log manual: " + err.message, "error");
+          return;
+        }
+      } else {
+        appState.attendance_logs.unshift(newLog);
+      }
+
+      closeManualAttendanceModal();
+      renderAllViews();
+      showToast("Log absensi berhasil ditambahkan.", "success");
+    }
+
+    function deleteAttendanceLog(logId) {
+      openConfirmModal("Hapus Log Absensi?", "Catatan kehadiran ini akan dihapus permanen.", async () => {
+        if (!IS_PREVIEW && supabase) {
+          try {
+            const { error } = await supabase.from("attendance_logs").delete().eq("id", logId);
+            if (error) throw error;
+          } catch (err) {
+            showToast("Gagal menghapus log: " + err.message, "error");
+            return;
+          }
+        }
+        appState.attendance_logs = appState.attendance_logs.filter((l) => l.id !== logId);
+        renderAllViews();
+        showToast("Log absensi dihapus.", "info");
+      });
+    }
+
+    function exportAttendanceCSV() {
+      const filteredLogs = getFilteredAdminLogs();
+      const headers = ["NIK", "Nama Karyawan", "Divisi", "Tanggal", "Check-In", "Check-Out", "Jumlah Jam Kerja", "Total Jam (Desimal)", "Jarak Masuk (m)", "Dalam Radius", "Status", "Catatan"];
+      const rows = filteredLogs.map((l) => {
+        const emp = getEmployeeById(l.employee_id) || { nik: "-", full_name: "Karyawan", division: "-" };
+        const dur = formatWorkDuration(l.check_in_time, l.check_out_time, l.status);
+        return [
+          emp.nik,
+          `"${emp.full_name}"`,
+          `"${emp.division}"`,
+          l.attendance_date,
+          formatTimeShort(l.check_in_time),
+          formatTimeShort(l.check_out_time),
+          `"${dur.text}"`,
+          dur.decimalHours,
+          l.check_in_distance_m ?? 0,
+          l.is_within_radius !== false ? "Ya" : "Tidak",
+          l.status,
+          `"${(l.notes || "").replace(/"/g, '""')}"`
+        ].join(",");
+      });
+      const csv = [headers.join(","), ...rows].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rekap_absensi_${TODAY_STR}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("File CSV Rekap Absensi berhasil diunduh.", "success");
+    }
+
+    function useCurrentLocationAsOffice() {
+      if (!navigator.geolocation) {
+        document.getElementById("set-office-lat").value = appState.gps.lat;
+        document.getElementById("set-office-lng").value = appState.gps.lng;
+        showToast("Menggunakan titik koordinat perangkat saat ini.", "info");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          document.getElementById("set-office-lat").value = pos.coords.latitude.toFixed(6);
+          document.getElementById("set-office-lng").value = pos.coords.longitude.toFixed(6);
+          showToast("Titik GPS kantor berhasil diambil dari lokasi Anda saat ini!", "success");
+        },
+        () => {
+          document.getElementById("set-office-lat").value = appState.gps.lat;
+          document.getElementById("set-office-lng").value = appState.gps.lng;
+          showToast("Menggunakan koordinat aktif saat ini.", "info");
+        }
+      );
+    }
+
+    async function handleSaveSettings(e) {
+      e.preventDefault();
+      const updated = {
+        id: 1,
+        company_name: document.getElementById("set-company-name").value.trim(),
+        work_start_time: document.getElementById("set-work-start").value,
+        late_tolerance_minutes: Number(document.getElementById("set-late-tolerance").value || 15),
+        work_end_time: document.getElementById("set-work-end").value,
+        office_lat: Number(document.getElementById("set-office-lat").value),
+        office_lng: Number(document.getElementById("set-office-lng").value),
+        max_radius_meters: Number(document.getElementById("set-max-radius").value || 100),
+        enforce_geofence: document.getElementById("set-enforce-geofence").checked
+      };
+
+      if (!IS_PREVIEW && supabase) {
+        try {
+          const { error } = await supabase.from("attendance_settings").upsert([updated]);
+          if (error) throw error;
+        } catch (err) {
+          showToast("Gagal menyimpan pengaturan ke Supabase: " + err.message, "error");
+          return;
+        }
+      }
+
+      appState.settings = updated;
+      recalculateGPSRadius();
+      renderAllViews();
+      showToast("Pengaturan jam kerja & titik radius GPS kantor berhasil disimpan!", "success");
+    }
+
+    // =====================================================================
+    // EMPLOYEE LEAVE SUBMISSION & PASSWORD UPDATE
+    // =====================================================================
+    async function handleEmployeeLeaveSubmit(e) {
+      e.preventDefault();
+      const emp = appState.currentUser?.data;
+      if (!emp) return;
+
+      const date = document.getElementById("leave-date").value;
+      const status = document.getElementById("leave-status").value;
+      const notes = document.getElementById("leave-notes").value.trim();
+
+      const newLeave = {
+        id: "log-" + Date.now(),
+        employee_id: emp.id,
+        attendance_date: date,
+        check_in_time: null,
+        check_out_time: null,
+        status,
+        notes,
+        qr_code_used: "PENGAJUAN-IZIN",
+        check_in_lat: appState.gps.lat,
+        check_in_lng: appState.gps.lng,
+        check_in_distance_m: appState.gps.distance_m,
+        check_out_lat: null,
+        check_out_lng: null,
+        check_out_distance_m: null,
+        is_within_radius: appState.gps.is_within_radius
+      };
+
+      if (!IS_PREVIEW && supabase) {
+        try {
+          const { data, error } = await supabase
+            .from("attendance_logs")
+            .insert([{
+              employee_id: newLeave.employee_id,
+              attendance_date: newLeave.attendance_date,
+              status: newLeave.status,
+              notes: newLeave.notes,
+              qr_code_used: newLeave.qr_code_used,
+              check_in_lat: newLeave.check_in_lat,
+              check_in_lng: newLeave.check_in_lng,
+              check_in_distance_m: newLeave.check_in_distance_m,
+              is_within_radius: newLeave.is_within_radius
+            }])
+            .select()
+            .single();
+          if (error) throw error;
+          appState.attendance_logs.unshift(data);
+        } catch (err) {
+          showToast("Gagal mengirim pengajuan izin: " + err.message, "error");
+          return;
+        }
+      } else {
+        appState.attendance_logs.unshift(newLeave);
+      }
+
+      document.getElementById("leave-notes").value = "";
+      renderAllViews();
+      showToast(`Pengajuan ${status} untuk tanggal ${date} berhasil dikirim.`, "success");
+    }
+
+    async function handleUpdateEmployeePassword(e) {
+      e.preventDefault();
+      const emp = appState.currentUser?.data;
+      if (!emp) return;
+      const newPass = document.getElementById("emp-new-password").value;
+      const confirmPass = document.getElementById("emp-confirm-password").value;
+
+      if (newPass !== confirmPass) {
+        showToast("Konfirmasi password baru tidak sama.", "error");
+        return;
+      }
+
+      if (!IS_PREVIEW && supabase) {
+        try {
+          const { error } = await supabase
+            .from("employees")
+            .update({ password: newPass })
+            .eq("id", emp.id);
+          if (error) throw error;
+        } catch (err) {
+          showToast("Gagal memperbarui password: " + err.message, "error");
+          return;
+        }
+      }
+
+      emp.password = newPass;
+      const idx = appState.employees.findIndex((x) => x.id === emp.id);
+      if (idx !== -1) appState.employees[idx].password = newPass;
+      document.getElementById("form-emp-password").reset();
+      showToast("Password akun Anda berhasil diperbarui!", "success");
+    }
+
+    function handleGlobalSearch(val) {
+      appState.searchQuery = val;
+      if (appState.currentUser?.role === "admin") {
+        renderAdminEmployees();
+        renderAdminLogsTable();
+      }
+    }
+
+    // =====================================================================
+    // PWA DYNAMIC SERVICE WORKER VIA BLOB (SINGLE-FILE REQUIREMENT)
+    // =====================================================================
+    function initSingleFilePWA() {
+      try {
+        if ("serviceWorker" in navigator && window.location.protocol.startsWith("http")) {
+          const swCode = `
+            self.addEventListener('install', (e) => self.skipWaiting());
+            self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+            self.addEventListener('fetch', () => {});
+          `;
+          const blob = new Blob([swCode], { type: "application/javascript" });
+          const swUrl = URL.createObjectURL(blob);
+          navigator.serviceWorker.register(swUrl).catch(() => {});
+        }
+      } catch (_) {}
+    }
+
+    // =====================================================================
+    // EXPOSE GLOBAL HANDLERS FOR INLINE ONCLICK / ONSUBMIT ATTRIBUTES
+    // =====================================================================
+    Object.assign(window, {
+      switchLoginRole,
+      handleEmployeeLogin,
+      handleAdminLogin,
+      quickPreviewLogin,
+      handleLogout,
+      navigateMenu,
+      refreshCurrentGPS,
+      simulateGPSOffset,
+      openNotificationModal,
+      regenerateActiveQR,
+      handleCreateQRSession,
+      setActiveQRSession,
+      deleteQRSession,
+      copyActiveQRToken,
+      openEmployeeModal,
+      closeEmployeeModal,
+      handleSaveEmployee,
+      confirmDeleteEmployee,
+      openManualAttendanceModal,
+      closeManualAttendanceModal,
+      handleSaveManualAttendance,
+      deleteAttendanceLog,
+      exportAttendanceCSV,
+      useCurrentLocationAsOffice,
+      handleSaveSettings,
+      setScanAttendanceMode,
+      startCameraScanner,
+      stopCameraScanner,
+      submitManualTokenScan,
+      handleEmployeeLeaveSubmit,
+      handleUpdateEmployeePassword,
+      handleGlobalSearch,
+      handleFooterBannerAction,
+      closeConfirmModal,
+      executeConfirmCallback,
+      renderAdminLogsTable,
+      resetAdminLogFilters
+    });
+
+    // =====================================================================
+    // INITIALIZATION ON LOAD
+    // =====================================================================
+    window.addEventListener("DOMContentLoaded", async () => {
+      // Configure Preview UI Visibility strictly according to IS_PREVIEW flag
+      const previewBanner = document.getElementById("preview-mode-banner");
+      const previewLoginBox = document.getElementById("login-preview-box");
+      if (IS_PREVIEW) {
+        previewBanner.classList.remove("hidden");
+        previewLoginBox.classList.remove("hidden");
+      } else {
+        previewBanner.remove();
+        previewLoginBox.remove();
+      }
+
+      // Start Live Clock
+      setInterval(() => {
+        const el = document.getElementById("live-clock-text");
+        if (el) el.textContent = new Date().toTimeString().slice(0, 8);
+      }, 1000);
+
+      initSingleFilePWA();
+      refreshCurrentGPS(false);
+
+      if (!IS_PREVIEW && supabase) {
+        await loadAllSupabaseData();
+        const { data } = await supabase.auth.getSession();
+        if (data?.session) {
+          loginSuccess({
+            role: "admin",
+            data: {
+              email: data.session.user.email,
+              full_name: "Admin HRD",
+              position: "Administrator"
+            }
+          });
+          return;
+        }
+      }
+
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
